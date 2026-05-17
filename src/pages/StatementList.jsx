@@ -1,5 +1,41 @@
+import { useState, useEffect } from 'react'
+import { getStatements } from '../api/statementApi'
+import { Link } from 'react-router-dom'
+
 function StatementList() {
-    return <div>Statement List</div>
+    const [statements, setStatements] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        getStatements()
+            .then(response => {
+                setStatements(response.data)
+                setLoading(false)
+            })
+            .catch(err => {
+                setError('Failed to load statements')
+                setLoading(false)
+            })
+    }, [])
+
+    if (loading) return <div>Loading...</div>
+    if (error) return <div>{error}</div>
+
+    return (
+        <div>
+            <h1>Statements</h1>
+            <ul>
+                {statements.map(statement => (
+                    <li key={statement.id}>
+                        <Link to={`/statements/${statement.id}`}>
+                            #{statement.controlNumber} — {statement.servicesForName} - {statement.serviceDate}
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
 }
 
 export default StatementList;
