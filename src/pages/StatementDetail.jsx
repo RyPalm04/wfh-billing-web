@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getStatement } from '../api/statementApi'
+import { getStatement, getStatementPdf } from '../api/statementApi'
 
 function StatementDetail() {
     const { id } = useParams()
@@ -20,6 +20,23 @@ function StatementDetail() {
         })
     }, [id])
 
+    function handleDownloadPdf() {
+        getStatementPdf(id)
+        .then(response => {
+            const url = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', `statement-${id}.pdf`)
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+            window.URL.revokeObjectURL(url)
+        })
+        .catch(() => {
+            alert('Failed to download PDF')
+        })
+    }
+
     if (loading) return <div>Loading...</div>
     if (error) return <div>{error}</div>
 
@@ -28,7 +45,7 @@ function StatementDetail() {
             <h1>Statement Detail #{statement.controlNumber}</h1>
             <p>{statement.servicesForName}</p>
             <p>{statement.serviceDate}</p>
-            <button>Download PDF</button>
+            <button onClick={handleDownloadPdf}>Download PDF</button>
             <Link to={`/statements/${id}/edit`}>Edit</Link>
         </div>
     )
