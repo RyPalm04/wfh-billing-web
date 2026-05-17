@@ -11,4 +11,12 @@ export function getStatements() {
     return api.get('/statements')
 }
 
+export function getStatement(id) {
+    return api.get(`/statements/${id}`)
+}
+
+export function getStatementPdf(id) {
+    return api.get(`/statements/${id}/pdf`, { responseType: 'blob' })
+}
+
 export default api
