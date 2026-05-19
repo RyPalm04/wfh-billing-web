@@ -52,34 +52,3 @@
     padding-top: 16px;
     border-top: 1px solid var(--border);
   }
-  
-  .btn {
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 8px 18px;
-    border-radius: 4px;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-    transition: background-color 0.2s;
-  }
-  
-  .btn-primary {
-    background-color: var(--green);
-    color: var(--white);
-  }
-
-  .btn-primary:hover {
-    background-color: var(--green-dark);
-  }
-  
-  .btn-secondary {
-    background-color: transparent;
-    color: var(--green);
-    border: 1px solid var(--green);
-  }
-
-  .btn-secondary:hover {
-    background-color: var(--green-light);
-  }
