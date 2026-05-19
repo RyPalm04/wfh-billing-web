@@ -2,10 +2,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import StatementList from './pages/StatementList'
 import StatementDetail from './pages/StatementDetail'
 import NewStatement from './pages/NewStatement'
+import Nav from './components/Nav'
 
 function App() {
   return (
     <BrowserRouter>
+      <Nav />
       <Routes>
         <Route path="/" element={<StatementList />} />
         <Route path="/statements/new" element={<NewStatement />} />
