@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getCatalog } from '../api/catalogApi'
 import { getStatement, updateStatement } from '../api/statementApi'
 import { useParams, useNavigate } from 'react-router-dom'
+import './EditStatement.css'
 
 function EditStatement() {
     const { id } = useParams()
@@ -50,7 +51,7 @@ function EditStatement() {
             })
     }
 
-        function updateMerchandiseQuantity(id, quantity, defaultCost) {
+    function updateMerchandiseQuantity(id, quantity, defaultCost) {
         const qty = parseInt(quantity) || 1
         setSelectedMerchandise(prev => ({
             ...prev,
@@ -191,8 +192,18 @@ function EditStatement() {
 
                 const services = {}
                 statementRes.data.services.forEach(s => {
-                    services[s.serviceId] = s
+                    if (!s.inPackage) {
+                        services[s.serviceId] = s
+                    }
                 })
+                if (statementRes.data.packageId) {
+                    const pkg = catalogRes.data.packages.find(p => p.id === statementRes.data.packageId)
+                    if (pkg) {
+                        pkg.serviceIds.forEach(serviceId => {
+                            services[serviceId] = { serviceId, inPackage: true }
+                        })
+                    }
+                }
                 setSelectedServices(services)
                 const merchandise = {}
                 statementRes.data.merchandise.forEach(m => {
@@ -444,10 +455,14 @@ function EditStatement() {
                         ))}
                     </div>
                 )}
-                <button onClick={() => navigate(`/statements/${id}`)}>Cancel</button>
-                <button type="submit" onClick={handleSubmit} disabled={submitting}>
-                    Save
-                </button>
+                <div className="form-submit form-actions">
+                    <button className="btn btn-secondary" onClick={() => navigate(`/statements/${id}`)}>
+                        Cancel
+                    </button>
+                    <button className="btn btn-primary" type="submit" disabled={submitting}>
+                        {submitting ? 'Saving...' : 'Save'}
+                    </button>
+                </div>
             </form>
         </div>
     )

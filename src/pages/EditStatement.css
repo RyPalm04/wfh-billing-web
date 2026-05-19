@@ -1,0 +1,16 @@
+  .edit-statement h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 28px;
+      color: var(--green);
+      margin-bottom: 24px;
+  }
+
+  .edit-statement form {
+      background-color: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 32px;
+      max-width: 640px;
+      margin: 0 auto;
+  }
