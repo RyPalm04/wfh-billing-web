@@ -26,17 +26,23 @@ function StatementList() {
     return (
         <div className="page statement-list">
             <h1>Statements</h1>
-            <ul>
-                {statements.map(statement => (
-                    <li key={statement.id}>
-                        <Link to={`/statements/${statement.id}`}>
-                            <span className="statement-number">#{statement.controlNumber} {statement.servicesForName}</span>
-                            <span className="statement-service-date"> Service: {statement.serviceDate}</span>
-                            <span className="statement-saved-date"> Saved: {new Date(statement.savedAt).toLocaleString()}</span>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            {statements.length === 0 ? (
+                <div className="empty-state">
+                    <p>No statements found. <Link to="/statements/new" className="btn btn-primary">Create a new statement</Link>.</p>
+                </div>
+            ) : (
+                <ul>
+                    {statements.map(statement => (
+                        <li key={statement.id}>
+                            <Link to={`/statements/${statement.id}`}>
+                                <span className="statement-number">#{statement.controlNumber} {statement.servicesForName}</span>
+                                <span className="statement-service-date"> Service: {statement.serviceDate}</span>
+                                <span className="statement-saved-date"> Saved: {new Date(statement.savedAt).toLocaleString()}</span>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     )
 }
