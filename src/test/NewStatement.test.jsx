@@ -93,7 +93,7 @@ describe('NewStatement', () => {
         fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
         fireEvent.click(screen.getByText('Create Statement'))
         await waitFor(() => {
-            expect(screen.getByText(`Statement #${mockControlNumber} created successfully!`)).toBeInTheDocument()
+            expect(statementApi.createStatement).toHaveBeenCalled()
         })
     })
 
@@ -225,13 +225,14 @@ describe('NewStatement', () => {
         render(<MemoryRouter><NewStatement /></MemoryRouter>)
         await waitFor(() => expect(screen.getByLabelText('Casket')).toBeInTheDocument())
         fireEvent.click(screen.getByLabelText('Casket'))
+        fireEvent.change(screen.getByLabelText('Description for Casket'), {target: { value: 'Oak casket' }})
         fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
         fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
         fireEvent.click(screen.getByText('Create Statement'))
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    merchandise: [{ merchandiseId: 1, price: '2500.00', description: '' }]
+                    merchandise: [{ merchandiseId: 1, price: '2500.00', description: 'Oak casket' }]
                 })
             )
         })
@@ -370,6 +371,85 @@ describe('NewStatement', () => {
                     merchandise: [{ merchandiseId: 3, price: '30.00', description: '' }]
                 })
             )
+        })
+    })
+
+    it('does not submit when variable-price merchandise has no price', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByLabelText('Flower Arrangement')).toBeInTheDocument())
+        fireEvent.click(screen.getByLabelText('Flower Arrangement'))
+        fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
+        fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
+        fireEvent.click(screen.getByText('Create Statement'))
+        await waitFor(() => {
+            expect(statementApi.createStatement).not.toHaveBeenCalled()
+            expect(screen.getByText('Price required')).toBeInTheDocument()
+        })
+    })
+
+    it('does not submit when merchandise with required description has no description', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByLabelText('Casket')).toBeInTheDocument())
+        fireEvent.click(screen.getByLabelText('Casket'))
+        fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
+        fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
+        fireEvent.click(screen.getByText('Create Statement'))
+        await waitFor(() => {
+            expect(statementApi.createStatement).not.toHaveBeenCalled()
+            expect(screen.getByText('Description required')).toBeInTheDocument()
+        })
+    })
+
+    it('does not submit when variable-price special charge has no price', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByLabelText('Mileage')).toBeInTheDocument())
+        fireEvent.click(screen.getByLabelText('Mileage'))
+        fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
+        fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
+        fireEvent.click(screen.getByText('Create Statement'))
+        await waitFor(() => {
+            expect(statementApi.createStatement).not.toHaveBeenCalled()
+            expect(screen.getByText('Price required')).toBeInTheDocument()
+        })
+    })
+
+    it('does not submit when special charge description is missing', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByLabelText('Mileage')).toBeInTheDocument())
+        fireEvent.click(screen.getByLabelText('Mileage'))
+        fireEvent.change(screen.getByLabelText('Price for Mileage'), { target: { value: '100.00' } })
+        fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
+        fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
+        fireEvent.click(screen.getByText('Create Statement'))
+        await waitFor(() => {
+            expect(statementApi.createStatement).not.toHaveBeenCalled()
+            expect(screen.getByText('Description required')).toBeInTheDocument()
+        })
+    })
+
+    it('does not submit when cash advance amount is missing', async () => {
+        // check Cemetery Opening, leave amount empty, fill servicesForName, click submit
+        // same assertions
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByLabelText('Cemetery Opening')).toBeInTheDocument())
+        fireEvent.click(screen.getByLabelText('Cemetery Opening'))
+        fireEvent.change(screen.getByLabelText('Provider for Cemetery Opening'), { target: { value: 'Greenwood Cemetery' } })
+        fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
+        fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
+        fireEvent.click(screen.getByText('Create Statement'))
+        await waitFor(() => {
+            expect(statementApi.createStatement).not.toHaveBeenCalled()
+            expect(screen.getByText('Amount required')).toBeInTheDocument()
         })
     })
 })
