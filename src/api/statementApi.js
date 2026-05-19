@@ -23,6 +23,10 @@ export function createStatement(statement) {
     return api.post('/statements', statement)
 }
 
+export function updateStatement(id, statement) {
+    return api.put(`/statements/${id}`, statement)
+}
+
 export function getStatementPdf(id) {
     return api.get(`/statements/${id}/pdf`, { responseType: 'blob' })
 }
