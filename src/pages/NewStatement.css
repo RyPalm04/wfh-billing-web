@@ -46,7 +46,7 @@
   .form-field input[readonly] {
       background-color: var(--green-light);
       color: var(--secondary);
-  }  
+  }
 
   .error {
       color: var(--rose);
@@ -66,4 +66,121 @@
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
+  }
+
+  .catalog-section {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+  }
+
+  .catalog-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 18px;
+      color: var(--green);
+      margin-bottom: 8px;
+  }
+
+  .catalog-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+  }
+
+  .catalog-item:last-child {
+      border-bottom: none;
+  }
+
+  .catalog-item label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      color: var(--primary);
+      cursor: pointer;
+  }
+
+  .catalog-item-price {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--rose);
+  }
+
+  .form-field select {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background-color: var(--white);
+      color: var(--primary);
+  }
+
+  .form-field select:focus {
+      outline: none;
+      border-color: var(--green);
+  }
+
+  .catalog-item-inputs,
+  .cash-advance-inputs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+  }
+
+  .catalog-input-text {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background-color: var(--white);
+      color: var(--primary);
+      flex: 1;
+      min-width: 100px;
+  }
+
+  .catalog-input-text:focus {
+      outline: none;
+      border-color: var(--green);
+  }
+
+  .catalog-input-price {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background-color: var(--white);
+      color: var(--rose);
+      width: 80px;
+      text-align: right;
+  }
+
+  .catalog-input-price:focus {
+      outline: none;
+      border-color: var(--rose);
+  }
+
+  .catalog-input-quantity {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background-color: var(--white);
+      color: var(--primary);
+      width: 60px;
+      text-align: center;
+  }
+
+  .catalog-input-quantity:focus {
+      outline: none;
+      border-color: var(--green);
   }
