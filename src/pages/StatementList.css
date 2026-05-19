@@ -14,19 +14,37 @@
 }
 
 .statement-list li a {
-    display: block;
-    background-color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--white);                                                                                                                            
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 16px 20px;
+    padding: 12px 16px;
     text-decoration: none;
     color: var(--primary);
     font-family: 'Lato', sans-serif;
+    font-size: 13px;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .statement-list li a:hover {
     border-color: var(--green);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.statement-number {
+    font-weight: 700;
+    flex: 1;
+}
+
+.statement-service-date, .statement-saved-date {
+    color: var(--secondary);
+    flex: 1;
+    text-align: center;
+}
+
+.statement-saved-date {
+    text-align: right;
 }
 

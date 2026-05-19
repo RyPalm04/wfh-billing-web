@@ -1,0 +1,85 @@
+  .statement-detail {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .detail-card {
+    background-color: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 32px;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .section-header {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--green);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-row:last-of-type {
+    border-bottom: none;
+  }
+
+  .detail-label {
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    color: var(--secondary);
+  }
+
+  .detail-value {
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    color: var(--primary);
+  }
+
+  .detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .btn {
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-primary {
+    background-color: var(--green);
+    color: var(--white);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--green-dark);
+  }
+  
+  .btn-secondary {
+    background-color: transparent;
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--green-light);
+  }
