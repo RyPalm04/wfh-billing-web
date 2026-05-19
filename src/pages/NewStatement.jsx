@@ -22,6 +22,7 @@ function NewStatement() {
     const [selectedCashAdvances, setSelectedCashAdvances] = useState({})
     const [packageId, setPackageId] = useState(null)
     const [reasonForEmbalming, setReasonForEmbalming] = useState('')
+    const [errors, setErrors] = useState({})
 
     useEffect(() => {
         Promise.all([getCatalog(), getNextControlNumber()])
@@ -39,6 +40,14 @@ function NewStatement() {
 
     function handleSubmit(e) {
         e.preventDefault()
+        console.log('handleSubmit fired')
+        const validationErrors = validate()
+        console.log('validation errors:', validationErrors)
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors)
+            return
+        }
+        setErrors({})
         setSubmitting(true)
         setSuccessMessage(null)
         createStatement({
@@ -192,6 +201,41 @@ function NewStatement() {
         return isNaN(num) ? '' : num.toFixed(2)
     }
 
+    function validate() {
+        const errors = {}
+
+        Object.entries(selectedMerchandise).forEach(([id, item]) => {
+            const catalogItem = catalog.merchandise.find(m => m.id === parseInt(id))
+            if (!catalogItem.defaultCost && !parseFloat(item.price)) {
+                errors[`merchandise_${id}`] = true
+            }
+            if (catalogItem.requiresDescription && catalogItem.pricingMode !== 'PER_UNIT' && !item.description?.trim()) {
+                errors[`merchandise_desc_${id}`] = true
+            }
+        })
+
+        Object.entries(selectedSpecialCharges).forEach(([id, item]) => {
+            const catalogItem = catalog.specialCharges.find(sc => sc.id === parseInt(id))
+            if (!catalogItem.defaultCost && !parseFloat(item.price)) {
+                errors[`specialCharge_${id}`] = true
+            }
+            if (catalogItem.requiresDescription && !item.description?.trim()) {
+                errors[`specialCharge_desc_${id}`] = true
+            }
+        })
+
+        Object.entries(selectedCashAdvances).forEach(([id, item]) => {
+            if (!parseFloat(item.amount)) {
+                errors[`cashAdvance_${id}`] = true
+            }
+            if (!item.provider?.trim()) {
+                errors[`cashAdvance_provider_${id}`] = true
+            }
+        })
+
+        return errors
+    }
+
     if (loading) {
         return <div className="page">Loading...</div>
     }
@@ -304,6 +348,7 @@ function NewStatement() {
                                                     onChange={e => updateMerchandiseDescription(item.id, e.target.value)}
                                                 />
                                             )}
+                                            {errors[`merchandise_desc_${item.id}`] && <div className="error">Description required</div>}
                                             {item.defaultCost ? (
                                                 <span className="catalog-item-price">${item.defaultCost}</span>
                                             ) : (
@@ -317,6 +362,7 @@ function NewStatement() {
                                                     onBlur={e => updateMerchandisePrice(item.id, formatPrice(e.target.value))}
                                                 />
                                             )}
+                                            {errors[`merchandise_${item.id}`] && <div className="error">Price required</div>}
                                         </>
                                     )}
                                 </div>
@@ -355,6 +401,7 @@ function NewStatement() {
                                             onBlur={e => updateSpecialChargeDescription(item.id, formatPrice(e.target.value))}
                                         />
                                     )}
+                                    {errors[`specialCharge_desc_${item.id}`] && <div className="error">Description required</div>}
                                     {item.defaultCost ? (
                                         <span className="catalog-item-price">${item.defaultCost}</span>
                                     ) : (
@@ -368,6 +415,7 @@ function NewStatement() {
                                             onBlur={e => updateSpecialChargePrice(item.id, formatPrice(e.target.value))}
                                         />
                                     )}
+                                    {errors[`specialCharge_${item.id}`] && <div className="error">Price required</div>}
                                 </div>
                             )}
                         </div>
@@ -398,6 +446,7 @@ function NewStatement() {
                                         value={selectedCashAdvances[item.id].provider}
                                         onChange={e => updateCashAdvanceProvider(item.id, e.target.value)}
                                     />
+                                    {errors[`cashAdvance_provider_${item.id}`] && <div className="error">Provider required</div>}
                                     <input
                                         type="text"
                                         aria-label={`Amount for ${item.name}`}
@@ -407,6 +456,7 @@ function NewStatement() {
                                         onChange={e => sanitizePrice(updateCashAdvanceAmount(item.id, e.target.value))}
                                         onBlur={e => formatPrice(updateCashAdvanceAmount(item.id, e.target.value))}
                                     />
+                                    {errors[`cashAdvance_${item.id}`] && <div className="error">Amount required</div>}
                                 </div>
                             )}
                         </div>
