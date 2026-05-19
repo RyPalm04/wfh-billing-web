@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getStatements } from '../api/statementApi'
 import { Link } from 'react-router-dom'
+import './StatementList.css'
 
 function StatementList() {
     const [statements, setStatements] = useState([])
@@ -23,7 +24,7 @@ function StatementList() {
     if (error) return <div>{error}</div>
 
     return (
-        <div>
+        <div className="page statement-list">
             <h1>Statements</h1>
             <ul>
                 {statements.map(statement => (

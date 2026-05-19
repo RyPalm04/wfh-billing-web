@@ -1,0 +1,46 @@
+.nav {
+    background-color: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 64px;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--white);
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+}
+
+.nav-brand img {
+    height: 40px;
+    width: 40px;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: var(--green);
+    color: var(--white);
+}
+
+.nav-actions {
+    display: flex;
+    gap: 8px;
+}
