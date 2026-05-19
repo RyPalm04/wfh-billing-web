@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getStatement, getStatementPdf } from '../api/statementApi'
+import './StatementDetail.css'
 
 function StatementDetail() {
     const { id } = useParams()
@@ -41,12 +42,30 @@ function StatementDetail() {
     if (error) return <div>{error}</div>
 
     return (
-        <div>
-            <h1>Statement Detail #{statement.controlNumber}</h1>
-            <p>{statement.servicesForName}</p>
-            <p>{statement.serviceDate}</p>
-            <button onClick={handleDownloadPdf}>Download PDF</button>
-            <Link to={`/statements/${id}/edit`}>Edit</Link>
+        <div className="page statement-detail">
+            <div className="detail-card">
+                <h2 className="section-header">Service Information</h2>
+                <div className="detail-row">
+                    <span className="detail-label">Control Number</span>
+                    <span className="detail-value">{statement.controlNumber}</span>
+                </div>
+                <div className="detail-row">
+                    <span className="detail-label">Services For</span>
+                    <span className="detail-value">{statement.servicesForName}</span>
+                </div>
+                <div className="detail-row">
+                    <span className="detail-label">Service Date</span>
+                    <span className="detail-value">{statement.serviceDate}</span>
+                </div>
+                <div className="detail-actions">
+                    <button className="btn btn-primary" onClick={handleDownloadPdf}>
+                        Download PDF
+                    </button>
+                    <Link className="btn btn-secondary" to={`/statements/${id}/edit`}>
+                        Edit
+                    </Link>
+                </div>
+            </div>
         </div>
     )
 }

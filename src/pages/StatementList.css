@@ -1,0 +1,32 @@
+.statement-list h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: 28px;
+    color: var(--green);
+    margin-bottom: 24px;
+}
+
+.statement-list ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.statement-list li a {
+    display: block;
+    background-color: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: var(--primary);
+    font-family: 'Lato', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.statement-list li a:hover {
+    border-color: var(--green);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+

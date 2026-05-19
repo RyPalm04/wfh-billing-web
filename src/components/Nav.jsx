@@ -1,15 +1,18 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/app-icon.png'
+import './Nav.css'
 
 function Nav() {
     return (
-        <nav>
-            <Link to="/">
+        <nav className="nav">
+            <Link to="/" className="nav-brand">
                 <img src={logo} alt="Wright Funeral Home Logo" />
                 Wright Funeral Home
             </Link>
-            <Link to="/statements/new">New Statement</Link>
-            <Link to="/">Statements</Link>
+            <div className="nav-actions">
+                <Link to="/statements/new" className="nav-link">New Statement</Link>
+                <Link to="/statements" className="nav-link">Statements</Link>
+            </div>
         </nav>
     )
 }
