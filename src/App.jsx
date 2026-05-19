@@ -11,6 +11,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<StatementList />} />
+        <Route path="/statements" element={<StatementList />} />
         <Route path="/statements/new" element={<NewStatement />} />
         <Route path="/statements/:id" element={<StatementDetail />} />
         <Route path="/statements/:id/edit" element={<EditStatement />} />
