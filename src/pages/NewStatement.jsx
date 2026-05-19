@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getCatalog } from '../api/catalogApi'
 import { createStatement, getNextControlNumber } from '../api/statementApi'
 import './NewStatement.css'
@@ -48,9 +49,8 @@ function NewStatement() {
             specialCharges: Object.values(selectedSpecialCharges),
             cashAdvances: Object.values(selectedCashAdvances)
         })
-            .then(response => {
-                setSuccessMessage(`Statement #${response.data.controlNumber} created successfully!`)
-                setSubmitting(false)
+            .then(() => {
+                navigate('/statements')
             })
             .catch(error => {
                 console.error('Error creating statement:', error)
