@@ -30,7 +30,9 @@ function StatementList() {
                 {statements.map(statement => (
                     <li key={statement.id}>
                         <Link to={`/statements/${statement.id}`}>
-                            #{statement.controlNumber} — {statement.servicesForName} - {statement.serviceDate}
+                            <span className="statement-number">#{statement.controlNumber} {statement.servicesForName}</span>
+                            <span className="statement-service-date"> Service: {statement.serviceDate}</span>
+                            <span className="statement-saved-date"> Saved: {new Date(statement.savedAt).toLocaleString()}</span>
                         </Link>
                     </li>
                 ))}
