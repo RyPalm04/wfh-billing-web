@@ -4,6 +4,14 @@ import { MemoryRouter } from 'react-router-dom'
 import EditStatement from '../pages/EditStatement'
 import * as catalogApi from '../api/catalogApi'
 import * as statementApi from '../api/statementApi'
+import toast from 'react-hot-toast'
+
+vi.mock('react-hot-toast', () => ({
+    default: {
+        success: vi.fn(),
+        error: vi.fn()
+    }
+}))
 
 vi.mock('../api/statementApi', () => ({
     getStatement: vi.fn(),
@@ -247,7 +255,7 @@ describe('EditStatement', () => {
         })
 
         await waitFor(() => {
-            expect(screen.getByText('Statement updated successfully')).toBeInTheDocument()
+            expect(toast.success).toHaveBeenCalledWith('Statement updated successfully')
         })
     })
 
@@ -268,7 +276,7 @@ describe('EditStatement', () => {
         })
 
         await waitFor(() => {
-            expect(screen.getByText('Failed to save statement')).toBeInTheDocument()
+            expect(toast.error).toHaveBeenCalledWith('Failed to save statement')
         })
     })
 

@@ -5,6 +5,7 @@ import NewStatement from '../pages/NewStatement'
 import * as statementApi from '../api/statementApi'
 import * as catalogApi from '../api/catalogApi'
 import Shepherd from 'shepherd.js'
+import toast from 'react-hot-toast'
 
 vi.mock('../api/statementApi', () => ({
     createStatement: vi.fn(),
@@ -17,6 +18,13 @@ vi.mock('../api/catalogApi', () => ({
 
 vi.mock('shepherd.js', () => ({
     default: { Tour: vi.fn() }
+}))
+
+vi.mock('react-hot-toast', () => ({
+    default: {
+        success: vi.fn(),
+        error: vi.fn()
+    }
 }))
 
 const mockCatalog = {
@@ -120,7 +128,7 @@ describe('NewStatement', () => {
         fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
         fireEvent.click(screen.getByText('Create Statement'))
         await waitFor(() => {
-            expect(screen.getByText('Failed to create statement')).toBeInTheDocument()
+            expect(toast.error).toHaveBeenCalledWith('Failed to create statement')
         })
     })
 
