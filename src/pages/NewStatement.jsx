@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getCatalog } from '../api/catalogApi'
 import { createStatement, getNextControlNumber } from '../api/statementApi'
 import Shepherd from 'shepherd.js'
+import toast from 'react-hot-toast'
 import 'shepherd.js/dist/css/shepherd.css'
 import './NewStatement.css'
 
@@ -16,8 +17,6 @@ function NewStatement() {
     const [dateOfDeath, setDateOfDeath] = useState('')
     const [placeOfDeath, setPlaceOfDeath] = useState('')
     const [submitting, setSubmitting] = useState(false)
-    const [submitError, setSubmitError] = useState(null)
-    const [successMessage, setSuccessMessage] = useState(null)
     const [selectedServices, setSelectedServices] = useState({})
     const [selectedMerchandise, setSelectedMerchandise] = useState({})
     const [selectedSpecialCharges, setSelectedSpecialCharges] = useState({})
@@ -106,7 +105,6 @@ function NewStatement() {
         }
         setErrors({})
         setSubmitting(true)
-        setSuccessMessage(null)
         createStatement({
             controlNumber, servicesForName, serviceDate, dateOfDeath, placeOfDeath, reasonForEmbalming,
             packageId,
@@ -120,7 +118,7 @@ function NewStatement() {
             })
             .catch(error => {
                 console.error('Error creating statement:', error)
-                setSubmitError('Failed to create statement')
+                toast.error('Failed to create statement')
                 setSubmitting(false)
             })
     }
@@ -307,8 +305,6 @@ function NewStatement() {
                 <h1>New Statement</h1>
                 <button type="button" className="btn btn-secondary" onClick={() => { localStorage.removeItem('tourSeen'); startTour() }}>Restart Tour</button>
             </div>
-            {submitError && <div className="error">{submitError}</div>}
-            {successMessage && <div className="success">{successMessage}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-field">
                     <label htmlFor="controlNumber">Control Number</label>

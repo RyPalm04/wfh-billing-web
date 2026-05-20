@@ -6,11 +6,24 @@ import StatementDetail from './pages/StatementDetail'
 import NewStatement from './pages/NewStatement'
 import EditStatement from './pages/EditStatement'
 import Nav from './components/Nav'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
   return (
     <BrowserRouter>
       <Nav />
+      <Toaster position="bottom-right" toastOptions={{
+        style: {
+          fontFamily: 'Lato, sans-serif',
+          fontSize: '13px',
+          color: '#2c2c2c',
+          border: '1px solid #d0ccc7',
+          borderRadius: '6px',
+        },
+        duration: 4000,
+        success: { iconTheme: { primary: '#2d6a35', secondary: '#fff' } },
+        error: { iconTheme: { primary: '#a0522d', secondary: '#fff' } }
+      }} />
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Routes>
           <Route path="/" element={<StatementList />} />

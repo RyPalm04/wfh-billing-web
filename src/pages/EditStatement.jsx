@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getCatalog } from '../api/catalogApi'
 import { getStatement, updateStatement } from '../api/statementApi'
 import { useParams, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import './EditStatement.css'
 
 function EditStatement() {
@@ -21,14 +22,11 @@ function EditStatement() {
     const [selectedSpecialCharges, setSelectedSpecialCharges] = useState([])
     const [selectedCashAdvances, setSelectedCashAdvances] = useState([])
     const [submitting, setSubmitting] = useState(false)
-    const [submitError, setSubmitError] = useState(null)
-    const [successMessage, setSuccessMessage] = useState(null)
     const [packageId, setPackageId] = useState(null)
 
     function handleSubmit(e) {
         e.preventDefault()
         setSubmitting(true)
-        setSuccessMessage(null)
         updateStatement(id, {
             servicesForName,
             serviceDate,
@@ -41,12 +39,12 @@ function EditStatement() {
             packageId
         })
             .then(() => {
-                setSuccessMessage('Statement updated successfully')
+                toast.success('Statement updated successfully')
                 setSubmitting(false)
                 navigate(`/statements/${id}`)
             })
             .catch(() => {
-                setSubmitError('Failed to save statement')
+                toast.error('Failed to save statement')
                 setSubmitting(false)
             })
     }
@@ -244,8 +242,6 @@ function EditStatement() {
     return (
         <div className="page edit-statement">
             <h1>Edit Statement #{statement.controlNumber}</h1>
-            {submitError && <div className="error">{submitError}</div>}
-            {successMessage && <div className="success">{successMessage}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-field">
                     <label htmlFor="controlNumber">Control Number</label>
