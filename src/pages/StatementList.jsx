@@ -7,6 +7,9 @@ function StatementList() {
     const [statements, setStatements] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [search, setSearch] = useState('')
+    const [fromDate, setFromDate] = useState('')
+    const [toDate, setToDate] = useState('')
 
     useEffect(() => {
         getStatements()
@@ -23,16 +26,43 @@ function StatementList() {
     if (loading) return <div>Loading...</div>
     if (error) return <div>{error}</div>
 
+    const filtered = statements.filter(s => {
+        const matchesSearch = search === '' ||
+            s.servicesForName.toLowerCase().includes(search.toLowerCase()) ||
+            s.controlNumber.toString().includes(search)
+        const matchesFrom = fromDate === '' || s.serviceDate >= fromDate
+        const matchesTo = toDate === '' || s.serviceDate <= toDate
+        return matchesSearch && matchesFrom && matchesTo
+    })
+
     return (
         <div className="page statement-list">
             <h1>Statements</h1>
+            <div className="statement-filters">
+                <div className="form-field">
+                    <label htmlFor="search">Search</label>
+                    <input id="search" type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Name or control number" />
+                </div>
+                <div className="form-field">
+                    <label htmlFor="fromDate">From</label>
+                    <input id="fromDate" type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} />
+                </div>
+                <div className="form-field">
+                    <label htmlFor="toDate">To</label>
+                    <input id="toDate" type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
+                </div>
+            </div>
             {statements.length === 0 ? (
                 <div className="empty-state">
                     <p>No statements found. <Link to="/statements/new" className="btn btn-primary">Create a new statement</Link>.</p>
                 </div>
+            ) : filtered.length === 0 ? (
+                <div className="empty-state">
+                    <p>No results</p>
+                </div>
             ) : (
                 <ul>
-                    {statements.map(statement => (
+                    {filtered.map(statement => (
                         <li key={statement.id}>
                             <Link to={`/statements/${statement.id}`}>
                                 <span className="statement-number">#{statement.controlNumber} {statement.servicesForName}</span>
