@@ -184,3 +184,35 @@
       outline: none;
       border-color: var(--green);
   }
+
+  .shepherd-element {
+      font-family: 'Lato', sans-serif;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      max-width: 480px;
+  }
+
+  .shepherd-text {
+      padding: 16px;
+      font-size: 13px;
+      color: var(--secondary);
+      line-height: 1.6;
+  }
+
+  .shepherd-footer {
+      padding: 0 16px 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+  }
+
+  .shepherd-cancel-icon {
+      color: var(--muted);
+  }
+
+  .shepherd-cancel-icon:hover {
+      color: var(--primary);
+      background: none;
+  }
