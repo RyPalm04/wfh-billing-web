@@ -58,3 +58,37 @@
     align-items: center;
     gap: 16px;
 }
+
+.statement-filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-end;
+}
+
+.statement-filters .form-field {
+    margin-bottom: 0;
+}
+
+.statement-filters input {
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background-color: var(--white);
+    color: var(--primary);
+}
+
+.statement-filters input:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+.statement-filters label {
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    color: var(--secondary);
+    margin-bottom: 4px;
+    display: block;
+}
