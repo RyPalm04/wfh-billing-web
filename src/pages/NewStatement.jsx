@@ -28,7 +28,15 @@ function NewStatement() {
 
     function startTour() {
         const tour = new Shepherd.Tour({
-            defaultStepOptions: { cancelIcon: { enabled: true } },
+            defaultStepOptions: {
+                cancelIcon: {
+                    enabled: true,
+                    label: 'Close Tour'
+                },
+                modalOverlayOpeningPadding: 12,
+                modalOverlayOpeningRadius: 4,
+                scrollTo: { behavior: 'smooth', block: 'center', inline: 'center' }
+            },
             useModalOverlay: true
         })
         tour.addSteps([
@@ -295,231 +303,231 @@ function NewStatement() {
 
     return (
         <div className="page new-statement">
-                    <div className="page-header">
-                        <h1>New Statement</h1>
-                        <button type="button" className="btn btn-secondary" onClick={() => { localStorage.removeItem('tourSeen'); startTour() }}>Restart Tour</button>
+            <div className="page-header">
+                <h1>New Statement</h1>
+                <button type="button" className="btn btn-secondary" onClick={() => { localStorage.removeItem('tourSeen'); startTour() }}>Restart Tour</button>
+            </div>
+            {submitError && <div className="error">{submitError}</div>}
+            {successMessage && <div className="success">{successMessage}</div>}
+            <form onSubmit={handleSubmit}>
+                <div className="form-field">
+                    <label htmlFor="controlNumber">Control Number</label>
+                    <input id="controlNumber" type="text" value={controlNumber} readOnly />
+                </div>
+                <div className="form-field">
+                    <label htmlFor="servicesForName">Services For Name</label>
+                    <input id="servicesForName" type="text" value={servicesForName} onChange={e => setServicesForName(e.target.value)} required />
+                </div>
+                <div className="form-field">
+                    <label htmlFor="serviceDate">Service Date</label>
+                    <input id="serviceDate" type="date" value={serviceDate} onChange={e => setServiceDate(e.target.value)} />
+                </div>
+                <div className="form-field">
+                    <label htmlFor="placeOfDeath">Place of Death</label>
+                    <input id="placeOfDeath" type="text" value={placeOfDeath} onChange={e => setPlaceOfDeath(e.target.value)} />
+                </div>
+                <div className="form-field">
+                    <label htmlFor="dateOfDeath">Date of Death</label>
+                    <input id="dateOfDeath" type="date" value={dateOfDeath} onChange={e => setDateOfDeath(e.target.value)} />
+                </div>
+                {catalog.services.length > 0 && (
+                    <div className="catalog-section" id="services-section">
+                        <h2>Services</h2>
+                        {catalog.packages.length > 0 && (
+                            <div className="form-field">
+                                <label htmlFor="packageId">Package</label>
+                                <select id="packageId" value={packageId || ''} onChange={handlePackageChange}>
+                                    <option value="">None</option>
+                                    {catalog.packages.map(pkg => (
+                                        <option key={pkg.id} value={pkg.id}>{pkg.name} — ${pkg.defaultCost}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {catalog.services.map(service => (
+                            <div key={service.id} className="catalog-item">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={!!selectedServices[service.id]}
+                                        disabled={!!selectedServices[service.id]?.inPackage}
+                                        onChange={() => toggleService(service)}
+                                    />
+                                    {service.name}
+                                </label>
+                                <span className="catalog-item-price">${service.defaultCost}</span>
+                            </div>
+                        ))}
                     </div>
-                    {submitError && <div className="error">{submitError}</div>}
-                    {successMessage && <div className="success">{successMessage}</div>}
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-field">
-                            <label htmlFor="controlNumber">Control Number</label>
-                            <input id="controlNumber" type="text" value={controlNumber} readOnly />
-                        </div>
-                        <div className="form-field">
-                            <label htmlFor="servicesForName">Services For Name</label>
-                            <input id="servicesForName" type="text" value={servicesForName} onChange={e => setServicesForName(e.target.value)} required />
-                        </div>
-                        <div className="form-field">
-                            <label htmlFor="serviceDate">Service Date</label>
-                            <input id="serviceDate" type="date" value={serviceDate} onChange={e => setServiceDate(e.target.value)} />
-                        </div>
-                        <div className="form-field">
-                            <label htmlFor="placeOfDeath">Place of Death</label>
-                            <input id="placeOfDeath" type="text" value={placeOfDeath} onChange={e => setPlaceOfDeath(e.target.value)} />
-                        </div>
-                        <div className="form-field">
-                            <label htmlFor="dateOfDeath">Date of Death</label>
-                            <input id="dateOfDeath" type="date" value={dateOfDeath} onChange={e => setDateOfDeath(e.target.value)} />
-                        </div>
-                        {catalog.services.length > 0 && (
-                            <div className="catalog-section" id="services-section">
-                                <h2>Services</h2>
-                                {catalog.packages.length > 0 && (
-                                    <div className="form-field">
-                                        <label htmlFor="packageId">Package</label>
-                                        <select id="packageId" value={packageId || ''} onChange={handlePackageChange}>
-                                            <option value="">None</option>
-                                            {catalog.packages.map(pkg => (
-                                                <option key={pkg.id} value={pkg.id}>{pkg.name} — ${pkg.defaultCost}</option>
-                                            ))}
-                                        </select>
-                                    </div>
+                )}
+
+                {catalog.merchandise.length > 0 && (
+                    <div className="catalog-section" id="merchandise-section">
+                        <h2>Merchandise</h2>
+                        {catalog.merchandise.map(item => (
+                            <div key={item.id} className="catalog-item catalog-item--stacked">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={!!selectedMerchandise[item.id]}
+                                        onChange={() => toggleMerchandise(item)}
+                                    />
+                                    {item.name}
+                                </label>
+
+                                {!selectedMerchandise[item.id] && item.defaultCost && (
+                                    <span className="catalog-item-price">
+                                        ${item.defaultCost}{item.pricingMode === 'PER_UNIT' ? ' each' : ''}
+                                    </span>
                                 )}
-
-                                {catalog.services.map(service => (
-                                    <div key={service.id} className="catalog-item">
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={!!selectedServices[service.id]}
-                                                disabled={!!selectedServices[service.id]?.inPackage}
-                                                onChange={() => toggleService(service)}
-                                            />
-                                            {service.name}
-                                        </label>
-                                        <span className="catalog-item-price">${service.defaultCost}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {catalog.merchandise.length > 0 && (
-                            <div className="catalog-section" id="merchandise-section">
-                                <h2>Merchandise</h2>
-                                {catalog.merchandise.map(item => (
-                                    <div key={item.id} className="catalog-item catalog-item--stacked">
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={!!selectedMerchandise[item.id]}
-                                                onChange={() => toggleMerchandise(item)}
-                                            />
-                                            {item.name}
-                                        </label>
-
-                                        {!selectedMerchandise[item.id] && item.defaultCost && (
-                                            <span className="catalog-item-price">
-                                                ${item.defaultCost}{item.pricingMode === 'PER_UNIT' ? ' each' : ''}
-                                            </span>
-                                        )}
-                                        {selectedMerchandise[item.id] && (
-                                            <div className="catalog-item-inputs">
-                                                {item.pricingMode === 'PER_UNIT' ? (
-                                                    <>
-                                                        <input
-                                                            type="number"
-                                                            min="1"
-                                                            aria-label={`Quantity for ${item.name}`}
-                                                            className="catalog-input-quantity"
-                                                            value={selectedMerchandise[item.id].quantity}
-                                                            onChange={e => updateMerchandiseQuantity(item.id, e.target.value, item.defaultCost)}
-                                                        />
-                                                        <span className="catalog-item-price">
-                                                            ${(parseFloat(item.defaultCost) * selectedMerchandise[item.id].quantity).toFixed(2)}
-                                                        </span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {item.requiresDescription && (
-                                                            <input
-                                                                type="text"
-                                                                aria-label={`Description for ${item.name}`}
-                                                                className="catalog-input-text"
-                                                                placeholder="Description"
-                                                                value={selectedMerchandise[item.id].description}
-                                                                onChange={e => updateMerchandiseDescription(item.id, e.target.value)}
-                                                            />
-                                                        )}
-                                                        {errors[`merchandise_desc_${item.id}`] && <div className="error">Description required</div>}
-                                                        {item.defaultCost ? (
-                                                            <span className="catalog-item-price">${item.defaultCost}</span>
-                                                        ) : (
-                                                            <input
-                                                                type="text"
-                                                                aria-label={`Price for ${item.name}`}
-                                                                className="catalog-input-price"
-                                                                placeholder="0.00"
-                                                                value={selectedMerchandise[item.id].price}
-                                                                onChange={e => updateMerchandisePrice(item.id, sanitizePrice(e.target.value))}
-                                                                onBlur={e => updateMerchandisePrice(item.id, formatPrice(e.target.value))}
-                                                            />
-                                                        )}
-                                                        {errors[`merchandise_${item.id}`] && <div className="error">Price required</div>}
-                                                    </>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {catalog.specialCharges.length > 0 && (
-                            <div className="catalog-section" id="special-charges-section">
-                                <h2>Special Charges</h2>
-                                {catalog.specialCharges.map(item => (
-                                    <div key={item.id} className="catalog-item catalog-item--stacked">
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={!!selectedSpecialCharges[item.id]}
-                                                onChange={() => toggleSpecialCharge(item)}
-                                            />
-                                            {item.name}
-                                        </label>
-                                        {!selectedSpecialCharges[item.id] && item.defaultCost && (
-                                            <span className="catalog-item-price">${item.defaultCost}</span>
-                                        )}
-                                        {selectedSpecialCharges[item.id] && (
-                                            <div className="catalog-item-inputs">
+                                {selectedMerchandise[item.id] && (
+                                    <div className="catalog-item-inputs">
+                                        {item.pricingMode === 'PER_UNIT' ? (
+                                            <>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    aria-label={`Quantity for ${item.name}`}
+                                                    className="catalog-input-quantity"
+                                                    value={selectedMerchandise[item.id].quantity}
+                                                    onChange={e => updateMerchandiseQuantity(item.id, e.target.value, item.defaultCost)}
+                                                />
+                                                <span className="catalog-item-price">
+                                                    ${(parseFloat(item.defaultCost) * selectedMerchandise[item.id].quantity).toFixed(2)}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
                                                 {item.requiresDescription && (
                                                     <input
                                                         type="text"
                                                         aria-label={`Description for ${item.name}`}
-                                                        placeholder="Description"
                                                         className="catalog-input-text"
-                                                        value={selectedSpecialCharges[item.id].description}
-                                                        onChange={e => updateSpecialChargeDescription(item.id, sanitizePrice(e.target.value))}
-                                                        onBlur={e => updateSpecialChargeDescription(item.id, formatPrice(e.target.value))}
+                                                        placeholder="Description"
+                                                        value={selectedMerchandise[item.id].description}
+                                                        onChange={e => updateMerchandiseDescription(item.id, e.target.value)}
                                                     />
                                                 )}
-                                                {errors[`specialCharge_desc_${item.id}`] && <div className="error">Description required</div>}
+                                                {errors[`merchandise_desc_${item.id}`] && <div className="error">Description required</div>}
                                                 {item.defaultCost ? (
                                                     <span className="catalog-item-price">${item.defaultCost}</span>
                                                 ) : (
                                                     <input
                                                         type="text"
                                                         aria-label={`Price for ${item.name}`}
-                                                        placeholder="Price"
                                                         className="catalog-input-price"
-                                                        value={selectedSpecialCharges[item.id].price}
-                                                        onChange={e => updateSpecialChargePrice(item.id, sanitizePrice(e.target.value))}
-                                                        onBlur={e => updateSpecialChargePrice(item.id, formatPrice(e.target.value))}
+                                                        placeholder="0.00"
+                                                        value={selectedMerchandise[item.id].price}
+                                                        onChange={e => updateMerchandisePrice(item.id, sanitizePrice(e.target.value))}
+                                                        onBlur={e => updateMerchandisePrice(item.id, formatPrice(e.target.value))}
                                                     />
                                                 )}
-                                                {errors[`specialCharge_${item.id}`] && <div className="error">Price required</div>}
-                                            </div>
+                                                {errors[`merchandise_${item.id}`] && <div className="error">Price required</div>}
+                                            </>
                                         )}
                                     </div>
-                                ))}
+                                )}
                             </div>
-                        )}
+                        ))}
+                    </div>
+                )}
 
-                        {catalog.cashAdvances.length > 0 && (
-                            <div className="catalog-section" id="cash-advances-section">
-                                <h2>Cash Advances</h2>
-                                {catalog.cashAdvances.map(item => (
-                                    <div key={item.id} className="catalog-item">
-                                        <label>
+                {catalog.specialCharges.length > 0 && (
+                    <div className="catalog-section" id="special-charges-section">
+                        <h2>Special Charges</h2>
+                        {catalog.specialCharges.map(item => (
+                            <div key={item.id} className="catalog-item catalog-item--stacked">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={!!selectedSpecialCharges[item.id]}
+                                        onChange={() => toggleSpecialCharge(item)}
+                                    />
+                                    {item.name}
+                                </label>
+                                {!selectedSpecialCharges[item.id] && item.defaultCost && (
+                                    <span className="catalog-item-price">${item.defaultCost}</span>
+                                )}
+                                {selectedSpecialCharges[item.id] && (
+                                    <div className="catalog-item-inputs">
+                                        {item.requiresDescription && (
                                             <input
-                                                type="checkbox"
-                                                checked={!!selectedCashAdvances[item.id]}
-                                                onChange={() => toggleCashAdvance(item)}
+                                                type="text"
+                                                aria-label={`Description for ${item.name}`}
+                                                placeholder="Description"
+                                                className="catalog-input-text"
+                                                value={selectedSpecialCharges[item.id].description}
+                                                onChange={e => updateSpecialChargeDescription(item.id, sanitizePrice(e.target.value))}
+                                                onBlur={e => updateSpecialChargeDescription(item.id, formatPrice(e.target.value))}
                                             />
-                                            {item.name}
-                                        </label>
-                                        {selectedCashAdvances[item.id] && (
-                                            <div className="cash-advance-inputs">
-                                                <input
-                                                    type="text"
-                                                    aria-label={`Provider for ${item.name}`}
-                                                    placeholder="Provider"
-                                                    className="catalog-input-text"
-                                                    value={selectedCashAdvances[item.id].provider}
-                                                    onChange={e => updateCashAdvanceProvider(item.id, e.target.value)}
-                                                />
-                                                {errors[`cashAdvance_provider_${item.id}`] && <div className="error">Provider required</div>}
-                                                <input
-                                                    type="text"
-                                                    aria-label={`Amount for ${item.name}`}
-                                                    placeholder="Amount"
-                                                    className="catalog-input-price"
-                                                    value={selectedCashAdvances[item.id].amount}
-                                                    onChange={e => sanitizePrice(updateCashAdvanceAmount(item.id, e.target.value))}
-                                                    onBlur={e => formatPrice(updateCashAdvanceAmount(item.id, e.target.value))}
-                                                />
-                                                {errors[`cashAdvance_${item.id}`] && <div className="error">Amount required</div>}
-                                            </div>
                                         )}
+                                        {errors[`specialCharge_desc_${item.id}`] && <div className="error">Description required</div>}
+                                        {item.defaultCost ? (
+                                            <span className="catalog-item-price">${item.defaultCost}</span>
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                aria-label={`Price for ${item.name}`}
+                                                placeholder="Price"
+                                                className="catalog-input-price"
+                                                value={selectedSpecialCharges[item.id].price}
+                                                onChange={e => updateSpecialChargePrice(item.id, sanitizePrice(e.target.value))}
+                                                onBlur={e => updateSpecialChargePrice(item.id, formatPrice(e.target.value))}
+                                            />
+                                        )}
+                                        {errors[`specialCharge_${item.id}`] && <div className="error">Price required</div>}
                                     </div>
-                                ))}
+                                )}
                             </div>
-                        )}
-                        <div className="form-submit form-actions">
-                            <button type="submit" className="btn btn-primary" disabled={submitting}>Create Statement</button>
-                        </div>
-                    </form>
+                        ))}
+                    </div>
+                )}
+
+                {catalog.cashAdvances.length > 0 && (
+                    <div className="catalog-section" id="cash-advances-section">
+                        <h2>Cash Advances</h2>
+                        {catalog.cashAdvances.map(item => (
+                            <div key={item.id} className="catalog-item">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={!!selectedCashAdvances[item.id]}
+                                        onChange={() => toggleCashAdvance(item)}
+                                    />
+                                    {item.name}
+                                </label>
+                                {selectedCashAdvances[item.id] && (
+                                    <div className="cash-advance-inputs">
+                                        <input
+                                            type="text"
+                                            aria-label={`Provider for ${item.name}`}
+                                            placeholder="Provider"
+                                            className="catalog-input-text"
+                                            value={selectedCashAdvances[item.id].provider}
+                                            onChange={e => updateCashAdvanceProvider(item.id, e.target.value)}
+                                        />
+                                        {errors[`cashAdvance_provider_${item.id}`] && <div className="error">Provider required</div>}
+                                        <input
+                                            type="text"
+                                            aria-label={`Amount for ${item.name}`}
+                                            placeholder="Amount"
+                                            className="catalog-input-price"
+                                            value={selectedCashAdvances[item.id].amount}
+                                            onChange={e => sanitizePrice(updateCashAdvanceAmount(item.id, e.target.value))}
+                                            onBlur={e => formatPrice(updateCashAdvanceAmount(item.id, e.target.value))}
+                                        />
+                                        {errors[`cashAdvance_${item.id}`] && <div className="error">Amount required</div>}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <div className="form-submit form-actions">
+                    <button type="submit" className="btn btn-primary" disabled={submitting}>Create Statement</button>
+                </div>
+            </form>
         </div>
     )
 }
