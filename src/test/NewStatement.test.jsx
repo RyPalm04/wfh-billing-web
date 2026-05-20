@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import NewStatement from '../pages/NewStatement'
 import * as statementApi from '../api/statementApi'
 import * as catalogApi from '../api/catalogApi'
+import Shepherd from 'shepherd.js'
 
 vi.mock('../api/statementApi', () => ({
     createStatement: vi.fn(),
@@ -12,6 +13,10 @@ vi.mock('../api/statementApi', () => ({
 
 vi.mock('../api/catalogApi', () => ({
     getCatalog: vi.fn(),
+}))
+
+vi.mock('shepherd.js', () => ({
+    default: { Tour: vi.fn() }
 }))
 
 const mockCatalog = {
@@ -40,6 +45,8 @@ const mockControlNumber = 123
 describe('NewStatement', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        localStorage.clear()
+        Shepherd.Tour.mockImplementation(function() { return { addSteps: vi.fn(), start: vi.fn() } })
     })
 
     it('shows loading state initially', () => {
@@ -225,7 +232,7 @@ describe('NewStatement', () => {
         render(<MemoryRouter><NewStatement /></MemoryRouter>)
         await waitFor(() => expect(screen.getByLabelText('Casket')).toBeInTheDocument())
         fireEvent.click(screen.getByLabelText('Casket'))
-        fireEvent.change(screen.getByLabelText('Description for Casket'), {target: { value: 'Oak casket' }})
+        fireEvent.change(screen.getByLabelText('Description for Casket'), { target: { value: 'Oak casket' } })
         fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
         fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
         fireEvent.click(screen.getByText('Create Statement'))
@@ -451,5 +458,77 @@ describe('NewStatement', () => {
             expect(statementApi.createStatement).not.toHaveBeenCalled()
             expect(screen.getByText('Amount required')).toBeInTheDocument()
         })
+    })
+
+    it('starts guided tour on first visit', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        const mockStart = vi.fn()
+        const mockTour = { addSteps: vi.fn(), start: mockStart }
+        Shepherd.Tour.mockImplementation(function() { return mockTour })
+
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+
+        await waitFor(() => {
+            expect(mockStart).toHaveBeenCalled()
+        })
+    })
+
+    it('does not start tour if already seen', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        const mockStart = vi.fn()
+        const mockTour = { addSteps: vi.fn(), start: mockStart }
+        Shepherd.Tour.mockImplementation(function() { return mockTour })
+
+        localStorage.setItem('tourSeen', 'true')
+
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+
+        await waitFor(() => {
+            expect(screen.getByLabelText(/Services For Name/i)).toBeInTheDocument()
+        })
+        expect(mockStart).not.toHaveBeenCalled()
+    })
+
+    it('sets tourSeen in localStorage when tour starts', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        const mockStart = vi.fn()
+        const mockTour = { addSteps: vi.fn(), start: mockStart }
+        Shepherd.Tour.mockImplementation(function() { return mockTour })
+
+
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+
+        await waitFor(() => {
+            expect(mockStart).toHaveBeenCalled()
+        })
+        expect(localStorage.getItem('tourSeen')).toBe('true')
+    })
+
+    it('renders Restart Tour button after form loads', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+        await waitFor(() => {
+            expect(screen.getByText('Restart Tour')).toBeInTheDocument()
+        })
+    })
+
+    it('clicking Restart Tour clears tourSeen and starts the tour', async () => {
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
+        localStorage.setItem('tourSeen', 'true')
+        const mockStart = vi.fn()
+        const mockTour = { addSteps: vi.fn(), start: mockStart }
+        Shepherd.Tour.mockImplementation(function() { return mockTour })
+
+        render(<MemoryRouter><NewStatement /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByText('Restart Tour')).toBeInTheDocument())
+        fireEvent.click(screen.getByText('Restart Tour'))
+
+        expect(mockStart).toHaveBeenCalled()
+        expect(localStorage.getItem('tourSeen')).toBe('true')
     })
 })
