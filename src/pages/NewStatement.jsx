@@ -40,9 +40,7 @@ function NewStatement() {
 
     function handleSubmit(e) {
         e.preventDefault()
-        console.log('handleSubmit fired')
         const validationErrors = validate()
-        console.log('validation errors:', validationErrors)
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors)
             return
