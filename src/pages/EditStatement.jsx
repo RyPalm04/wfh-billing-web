@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getCatalog } from '../api/catalogApi'
 import { getStatement, updateStatement } from '../api/statementApi'
 import { useParams, useNavigate } from 'react-router-dom'
+import { sanitizePrice, formatPrice } from '../utils/price'
 import toast from 'react-hot-toast'
 import './EditStatement.css'
 
@@ -171,15 +172,6 @@ function EditStatement() {
             })
             setSelectedServices(newSelectedServices)
         }
-    }
-
-    function sanitizePrice(value) {
-        return (value ?? '').replace(/[^0-9.]/g, '')
-    }
-
-    function formatPrice(value) {
-        const num = parseFloat(value)
-        return isNaN(num) ? '' : num.toFixed(2)
     }
 
     useEffect(() => {

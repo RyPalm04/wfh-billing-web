@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCatalog } from '../api/catalogApi'
 import { createStatement, getNextControlNumber } from '../api/statementApi'
+import { sanitizePrice, formatPrice } from '../utils/price'
 import Shepherd from 'shepherd.js'
 import toast from 'react-hot-toast'
 import 'shepherd.js/dist/css/shepherd.css'
@@ -245,15 +246,6 @@ function NewStatement() {
             })
             setSelectedServices(newSelectedServices)
         }
-    }
-
-    function sanitizePrice(value) {
-        return (value ?? '').replace(/[^0-9.]/g, '')
-    }
-
-    function formatPrice(value) {
-        const num = parseFloat(value)
-        return isNaN(num) ? '' : num.toFixed(2)
     }
 
     function validate() {
