@@ -40,6 +40,7 @@
   --border: #d0ccc7;
   --bg: #f7f5f2;
   --white: #ffffff;
+  --gray: #4b4b4b;
 }
 
 * {
@@ -91,4 +92,11 @@ body {
 
 .btn-secondary:hover {
   background-color: var(--green-light);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border: 1px solid var(--gray);
+  color: var(--gray);
 }

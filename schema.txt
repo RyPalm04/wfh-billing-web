@@ -1,0 +1,76 @@
+                                     Table "public.saved_statements"
+        Column        |            Type             | Collation | Nullable |           Default            
+----------------------+-----------------------------+-----------+----------+------------------------------
+ id                   | integer                     |           | not null | generated always as identity
+ control_number       | integer                     |           | not null | 
+ services_for_name    | character varying(120)      |           | not null | ''::character varying
+ date_of_death        | date                        |           |          | 
+ place_of_death       | character varying(120)      |           | not null | ''::character varying
+ service_date         | date                        |           |          | 
+ reason_for_embalming | character varying(255)      |           |          | 
+ package_id           | integer                     |           |          | 
+ sales_tax_rate       | numeric(6,4)                |           |          | 0
+ payment              | numeric(10,2)               |           |          | 0
+ saved_at             | timestamp without time zone |           | not null | CURRENT_TIMESTAMP
+Indexes:
+    "saved_statements_pkey" PRIMARY KEY, btree (id)
+    "saved_statements_control_number_key" UNIQUE CONSTRAINT, btree (control_number)
+Foreign-key constraints:
+    "saved_statements_package_id_fkey" FOREIGN KEY (package_id) REFERENCES service_packages(id)
+Referenced by:
+    TABLE "saved_statement_cash_advances" CONSTRAINT "saved_statement_cash_advances_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+    TABLE "saved_statement_merchandise" CONSTRAINT "saved_statement_merchandise_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+    TABLE "saved_statement_services" CONSTRAINT "saved_statement_services_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+    TABLE "saved_statement_special_charges" CONSTRAINT "saved_statement_special_charges_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+
+         Table "public.saved_statement_services"
+    Column    |  Type   | Collation | Nullable | Default 
+--------------+---------+-----------+----------+---------
+ statement_id | integer |           | not null | 
+ service_id   | integer |           | not null | 
+ in_package   | boolean |           | not null | false
+Indexes:
+    "saved_statement_services_pkey" PRIMARY KEY, btree (statement_id, service_id)
+Foreign-key constraints:
+    "saved_statement_services_service_id_fkey" FOREIGN KEY (service_id) REFERENCES services(id)
+    "saved_statement_services_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+
+                       Table "public.saved_statement_merchandise"
+     Column     |          Type          | Collation | Nullable |        Default        
+----------------+------------------------+-----------+----------+-----------------------
+ statement_id   | integer                |           | not null | 
+ merchandise_id | integer                |           | not null | 
+ price          | numeric(10,2)          |           |          | 
+ description    | character varying(255) |           | not null | ''::character varying
+Indexes:
+    "saved_statement_merchandise_pkey" PRIMARY KEY, btree (statement_id, merchandise_id)
+Foreign-key constraints:
+    "saved_statement_merchandise_merchandise_id_fkey" FOREIGN KEY (merchandise_id) REFERENCES merchandise(id)
+    "saved_statement_merchandise_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+
+                      Table "public.saved_statement_special_charges"
+      Column       |          Type          | Collation | Nullable |        Default        
+-------------------+------------------------+-----------+----------+-----------------------
+ statement_id      | integer                |           | not null | 
+ special_charge_id | integer                |           | not null | 
+ price             | numeric(10,2)          |           |          | 
+ description       | character varying(255) |           | not null | ''::character varying
+Indexes:
+    "saved_statement_special_charges_pkey" PRIMARY KEY, btree (statement_id, special_charge_id)
+Foreign-key constraints:
+    "saved_statement_special_charges_special_charge_id_fkey" FOREIGN KEY (special_charge_id) REFERENCES special_charges(id)
+    "saved_statement_special_charges_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+
+                      Table "public.saved_statement_cash_advances"
+     Column      |          Type          | Collation | Nullable |        Default        
+-----------------+------------------------+-----------+----------+-----------------------
+ statement_id    | integer                |           | not null | 
+ cash_advance_id | integer                |           | not null | 
+ amount          | numeric(10,2)          |           |          | 
+ provider        | character varying(120) |           | not null | ''::character varying
+Indexes:
+    "saved_statement_cash_advances_pkey" PRIMARY KEY, btree (statement_id, cash_advance_id)
+Foreign-key constraints:
+    "saved_statement_cash_advances_cash_advance_id_fkey" FOREIGN KEY (cash_advance_id) REFERENCES cash_advances(id)
+    "saved_statement_cash_advances_statement_id_fkey" FOREIGN KEY (statement_id) REFERENCES saved_statements(id) ON DELETE CASCADE
+

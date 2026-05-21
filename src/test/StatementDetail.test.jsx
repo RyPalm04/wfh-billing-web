@@ -6,13 +6,28 @@ import * as statementApi from '../api/statementApi'
 
 vi.mock('../api/statementApi', () => ({
     getStatement: vi.fn(),
+    getStatementPdf: vi.fn(),
+    updateStatement: vi.fn()
+}))
+
+vi.mock('react-hot-toast', () => ({
+    toast: {
+        success: vi.fn(),
+        error: vi.fn()
+    }
 }))
 
 const mockStatement = {
     id: 1,
     controlNumber: 1,
     servicesForName: 'Test Person',
-    serviceDate: '2024-01-18'
+    serviceDate: '2024-01-18',
+    payment: null,
+    services: [],
+    merchandise: [],
+    specialCharges: [],
+    cashAdvances: []
+
 }
 
 describe('StatementDetail', () => {
@@ -21,7 +36,7 @@ describe('StatementDetail', () => {
     })
 
     it('shows loading state initially', () => {
-        statementApi.getStatement.mockReturnValue(new Promise(() => {}))
+        statementApi.getStatement.mockReturnValue(new Promise(() => { }))
         render(
             <MemoryRouter initialEntries={['/statements/1']}>
                 <StatementDetail />
@@ -44,7 +59,7 @@ describe('StatementDetail', () => {
         })
     })
 
-    it ('shows error messsage when fetch fails', async () => {
+    it('shows error messsage when fetch fails', async () => {
         statementApi.getStatement.mockRejectedValue(new Error('Network error'))
         render(
             <MemoryRouter initialEntries={['/statements/1']}>
@@ -59,30 +74,30 @@ describe('StatementDetail', () => {
     })
 
     it('has a PDF download button', async () => {
-      statementApi.getStatement.mockResolvedValue({ data: mockStatement })
-      render(
-        <MemoryRouter initialEntries={['/statements/1']}>
-          <Routes>
-            <Route path="/statements/:id" element={<StatementDetail />} />
-          </Routes>
-        </MemoryRouter>
-      )
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /download pdf/i })).toBeInTheDocument()
-      })
+        statementApi.getStatement.mockResolvedValue({ data: mockStatement })
+        render(
+            <MemoryRouter initialEntries={['/statements/1']}>
+                <Routes>
+                    <Route path="/statements/:id" element={<StatementDetail />} />
+                </Routes>
+            </MemoryRouter>
+        )
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: /download pdf/i })).toBeInTheDocument()
+        })
     })
 
     it('has an edit button', async () => {
-      statementApi.getStatement.mockResolvedValue({ data: mockStatement })
-      render(
-        <MemoryRouter initialEntries={['/statements/1']}>
-          <Routes>
-            <Route path="/statements/:id" element={<StatementDetail />} />
-          </Routes>
-        </MemoryRouter>
-      )
-      await waitFor(() => {
-        expect(screen.getByRole('link', { name: /edit/i })).toBeInTheDocument()
-      })
+        statementApi.getStatement.mockResolvedValue({ data: mockStatement })
+        render(
+            <MemoryRouter initialEntries={['/statements/1']}>
+                <Routes>
+                    <Route path="/statements/:id" element={<StatementDetail />} />
+                </Routes>
+            </MemoryRouter>
+        )
+        await waitFor(() => {
+            expect(screen.getByRole('link', { name: /edit/i })).toBeInTheDocument()
+        })
     })
 })

@@ -2,7 +2,7 @@
     display: flex;
     justify-content: center;
   }
-  
+
   .detail-card {
     background-color: var(--white);
     border: 1px solid var(--border);
@@ -20,7 +20,7 @@
     text-align: center;
     margin-bottom: 16px;
   }
-  
+
   .detail-row {
     display: flex;
     justify-content: space-between;
@@ -42,6 +42,7 @@
     font-family: 'Lato', sans-serif;
     font-size: 13px;
     color: var(--primary);
+    font-weight: 700;
   }
 
   .detail-actions {
@@ -51,4 +52,64 @@
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
+  }
+
+  .detail-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-section .detail-value {
+    color: var(--rose);
+  }
+
+  .detail-section-header {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--green);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .detail-totals {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-totals .detail-value {
+    color: var(--rose);
+  }
+
+  .detail-payment-edit,
+  .detail-payment-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .detail-section-total {
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  .detail-section-total .detail-label {
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .detail-grand-total .detail-label {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--green);
+  }
+
+  .detail-grand-total .detail-value {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--green);
   }
