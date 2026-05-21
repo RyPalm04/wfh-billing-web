@@ -216,3 +216,14 @@
       color: var(--primary);
       background: none;
   }
+
+  .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+  }
+
+  .page-header h1 {
+      margin-bottom: 0;
+  }
