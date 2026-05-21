@@ -35,7 +35,7 @@ function App() {
           </Routes>
         </ErrorBoundary>
       </main>
-    </BrowserRouter>
+      </BrowserRouter>
   )
 }
 
