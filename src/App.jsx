@@ -24,15 +24,17 @@ function App() {
         success: { iconTheme: { primary: '#2d6a35', secondary: '#fff' } },
         error: { iconTheme: { primary: '#a0522d', secondary: '#fff' } }
       }} />
-      <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Routes>
-          <Route path="/" element={<StatementList />} />
-          <Route path="/statements" element={<StatementList />} />
-          <Route path="/statements/new" element={<NewStatement />} />
-          <Route path="/statements/:id" element={<StatementDetail />} />
-          <Route path="/statements/:id/edit" element={<EditStatement />} />
-        </Routes>
-      </ErrorBoundary>
+      <main>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <Routes>
+            <Route path="/" element={<StatementList />} />
+            <Route path="/statements" element={<StatementList />} />
+            <Route path="/statements/new" element={<NewStatement />} />
+            <Route path="/statements/:id" element={<StatementDetail />} />
+            <Route path="/statements/:id/edit" element={<EditStatement />} />
+          </Routes>
+        </ErrorBoundary>
+      </main>
     </BrowserRouter>
   )
 }

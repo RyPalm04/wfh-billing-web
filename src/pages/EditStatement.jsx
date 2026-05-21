@@ -244,7 +244,7 @@ function EditStatement() {
             <h1>Edit Statement #{statement.controlNumber}</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-field">
-                    <label htmlFor="controlNumber">Control Number</label>
+                    <label htmlFor="controlNumber" tabIndex={-1}>Control Number</label>
                     <input id="controlNumber" type="text" value={controlNumber} readOnly />
                 </div>
                 <div className="form-field">

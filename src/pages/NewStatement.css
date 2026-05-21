@@ -209,7 +209,7 @@
   }
 
   .shepherd-cancel-icon {
-      color: var(--muted);
+      color: var(--secondary);
   }
 
   .shepherd-cancel-icon:hover {
