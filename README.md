@@ -2,6 +2,14 @@
 
   React frontend for the Wright Funeral Home billing statement generator. Provides a web interface for creating, viewing, editing, and downloading billing statements.
 
+  ## Screenshots
+
+  ![Statement List](docs/screenshots/statement-list.png)
+  ![New Statement](docs/screenshots/new-statement.png)
+  ![Statement Detail](docs/screenshots/statement-detail.png)
+  
+  > **Note:** All names, dates, and prices shown in screenshots are fictitious and used for demonstration purposes only.
+
   ## Features
   
   - Create and edit billing statements with services, merchandise, special charges, and cash advances
@@ -32,24 +40,28 @@
 
   ```bash
   npm install
-
-  Environment
+  ```
+  ### Environment
 
   Copy .env and set your values:
 
+  ```
   VITE_API_KEY=your_api_key
   VITE_API_BASE_URL=http://localhost:18080
+  ```
 
-  Running
+  ### Running
   
+  ```
   npm run dev
+  ```
 
-  Testing
+  ### Testing
 
+  ```
   npm test
+  ```
 
-  Deployment
+  ### Deployment
 
-  Deployed to Vercel. The master branch deploys to production automatically on push.
-
-  Adjust the deployment section if the Vercel setup is branch/tag triggered rather than push to master.
+  Deployed to Vercel. The `master` branch deploys to production automatically on push. The `beta` branch deploys to preview automatically on push.
