@@ -15,7 +15,7 @@ function AppContent() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if(document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable ? null : null) {
+      if(document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable) {
         return
       }
 

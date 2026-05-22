@@ -26,6 +26,7 @@ function NewStatement() {
     const [packageId, setPackageId] = useState(null)
     const [reasonForEmbalming, setReasonForEmbalming] = useState('')
     const [errors, setErrors] = useState({})
+    const navigate = useNavigate()
 
     function startTour() {
         logger.debug('Starting new statement creation tour')
@@ -113,9 +114,13 @@ function NewStatement() {
         }
         setErrors({})
         setSubmitting(true)
+        const selectedPackage = packageId ? catalog.packages.find(p => p.id === packageId) : null
+
         createStatement({
             controlNumber, servicesForName, serviceDate, dateOfDeath, placeOfDeath, reasonForEmbalming,
             packageId,
+            packageName: selectedPackage?.name ?? null,
+            packagePrice: selectedPackage?.defaultCost ?? null,
             services: Object.values(selectedServices),
             merchandise: Object.values(selectedMerchandise).map(({ quantity, ...item }) => item),
             specialCharges: Object.values(selectedSpecialCharges),
@@ -135,10 +140,10 @@ function NewStatement() {
     function updateMerchandiseQuantity(id, quantity, defaultCost) {
         const qty = parseInt(quantity) || 1
         logger.debug('Updating merchandise item', id, 'quantity:', qty, 'price:', (parseFloat(defaultCost) * qty).toFixed(2)),
-        setSelectedMerchandise(prev => ({
-            ...prev,
-            [id]: { ...prev[id], quantity: qty, price: (parseFloat(defaultCost) * qty).toFixed(2) }
-        }))
+            setSelectedMerchandise(prev => ({
+                ...prev,
+                [id]: { ...prev[id], quantity: qty, price: (parseFloat(defaultCost) * qty).toFixed(2) }
+            }))
     }
 
     function toggleService(service) {
@@ -151,7 +156,7 @@ function NewStatement() {
                 return next
             }
             logger.debug('Adding service', service.id, 'to selection')
-            return { ...prev, [service.id]: { serviceId: service.id, inPackage: false } }
+            return { ...prev, [service.id]: { serviceId: service.id, inPackage: false, name: service.name, price: service.defaultCost } }
         })
     }
 
@@ -167,6 +172,7 @@ function NewStatement() {
             logger.debug('Adding merchandise item', item.id, 'to selection with default price:', item.defaultCost)
             return {
                 ...prev, [item.id]: {
+                    name: item.name,
                     merchandiseId: item.id,
                     price: item.defaultCost || '',
                     description: '',
@@ -186,7 +192,7 @@ function NewStatement() {
                 return next
             }
             logger.debug('Adding special charge item', item.id, 'to selection with default price:', item.defaultCost)
-            return { ...prev, [item.id]: { specialChargeId: item.id, price: item.defaultCost || '', description: '' } }
+            return { ...prev, [item.id]: { name: item.name, specialChargeId: item.id, price: item.defaultCost || '', description: '' } }
         })
     }
 
@@ -200,7 +206,7 @@ function NewStatement() {
                 return next
             }
             logger.debug('Adding cash advance item', item.id, 'to selection')
-            return { ...prev, [item.id]: { cashAdvanceId: item.id, amount: '', provider: '' } }
+            return { ...prev, [item.id]: { name: item.name, cashAdvanceId: item.id, amount: '', provider: '' } }
         })
     }
 
@@ -272,7 +278,8 @@ function NewStatement() {
             const pkg = catalog.packages.find(p => p.id === id)
             const newSelectedServices = {}
             pkg.serviceIds.forEach(serviceId => {
-                newSelectedServices[serviceId] = { serviceId, inPackage: true }
+                const svc = catalog.services.find(s => s.id === serviceId)
+                newSelectedServices[serviceId] = { serviceId, inPackage: true, name: svc?.name, price: svc?.defaultCost }
             })
             setSelectedServices(newSelectedServices)
         }
