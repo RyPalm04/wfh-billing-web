@@ -139,10 +139,12 @@ function StatementDetail() {
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Services, Facilities, & Transportation</h3>
-                    {statement.packageName && (
+                    {statement.servicePackage && (
                         <div className="detail-row">
-                            <span className="detail-label">Package: {statement.packageName}</span>
-                            <span className="detail-value">${statement.packagePrice}</span>
+                            <span className="detail-label">
+                                Package: {statement.servicePackage.name}{statement.servicePackage.legacyPackage ? ' (Legacy)' : ''}
+                            </span>
+                            <span className="detail-value">${statement.servicePackage.defaultCost}</span>
                         </div>
                     )}
                     {statement.services.length === 0 ? (
