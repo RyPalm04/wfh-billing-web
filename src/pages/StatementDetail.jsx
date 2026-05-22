@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { getStatement, getStatementPdf, updateStatement } from '../api/statementApi'
 import { sanitizePrice, formatPrice } from '../utils/price'
 import toast from 'react-hot-toast'
+import logger from '../utils/logger'
 import './StatementDetail.css'
 
 function StatementDetail() {
@@ -15,20 +16,24 @@ function StatementDetail() {
     const [savedPayment, setSavedPayment] = useState('')
 
     useEffect(() => {
+        logger.debug('Fetching statement...')
         getStatement(id)
             .then(response => {
+                logger.debug('Fetched statement:', response.data)
                 setStatement(response.data)
                 setDownPayment(response.data.payment ?? '')
                 setSavedPayment(response.data.payment ?? '')
                 setLoading(false)
             })
             .catch(err => {
+                logger.error('Error fetching statement:', err)
                 setError('Failed to load statement')
                 setLoading(false)
             })
     }, [id])
 
     function handleDownloadPdf() {
+        logger.debug('Downloading statement PDF...')
         getStatementPdf(id)
             .then(response => {
                 const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -39,20 +44,27 @@ function StatementDetail() {
                 link.click()
                 link.remove()
                 window.URL.revokeObjectURL(url)
+                logger.debug('Downloaded PDF for statement', id)
             })
             .catch(() => {
-                alert('Failed to download PDF')
+                logger.debug('Failed to download PDF for statement', id)
+                toast.error('Failed to download PDF')
             })
     }
 
     function handleSavePayment() {
+        logger.debug('Saving down payment for statement', id, 'value:', downPayment)
         updateStatement(id, { ...statement, payment: downPayment })
             .then(() => {
                 setSavedPayment(downPayment)
                 setEditingPayment(false)
                 toast.success('Down payment saved')
+                logger.debug('Saved down payment for statement', id, 'value:', downPayment)
             })
-            .catch(() => toast.error('Failed to save down payment'))
+            .catch(() => {
+                logger.error('Failed to save down payment for statement', id, 'value:', downPayment)
+                toast.error('Failed to save down payment')
+            })
     }
 
     if (loading) return <div>Loading...</div>
@@ -164,8 +176,10 @@ function StatementDetail() {
                                     placeholder="0.00"
                                     onKeyDown={e => {
                                         if (e.key === 'Enter') {
+                                            logger.debug('Saving down payment for statement', id, 'value:', downPayment)
                                             handleSavePayment()
                                         } else if (e.key === 'Escape') {
+                                            logger.debug('Cancelling down payment edit for statement', id)
                                             setDownPayment(savedPayment)
                                             setEditingPayment(false)
                                         }
