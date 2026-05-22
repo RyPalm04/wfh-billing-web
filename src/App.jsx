@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './components/ErrorFallback'
 import StatementList from './pages/StatementList'
@@ -6,11 +7,32 @@ import StatementDetail from './pages/StatementDetail'
 import NewStatement from './pages/NewStatement'
 import EditStatement from './pages/EditStatement'
 import Nav from './components/Nav'
+import logger from './utils/logger'
 import { Toaster } from 'react-hot-toast'
 
-function App() {
+function AppContent() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if(document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable ? null : null) {
+        return
+      }
+
+      if (e.key === 's' && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+        logger.debug('S key pressed - navigating to statement list')
+        navigate('/statements')
+      } else if (e.key === 'n' && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+        logger.debug('N key pressed - navigating to new statement page')
+        navigate('/statements/new')
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [navigate])
+
   return (
-    <BrowserRouter>
+    <>
       <Nav />
       <Toaster position="bottom-right" toastOptions={{
         style: {
@@ -35,7 +57,15 @@ function App() {
           </Routes>
         </ErrorBoundary>
       </main>
-      </BrowserRouter>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   )
 }
 

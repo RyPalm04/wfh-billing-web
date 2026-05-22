@@ -4,6 +4,7 @@ import { getStatement, updateStatement } from '../api/statementApi'
 import { useParams, useNavigate } from 'react-router-dom'
 import { sanitizePrice, formatPrice } from '../utils/price'
 import toast from 'react-hot-toast'
+import logger from '../utils/logger'
 import './EditStatement.css'
 
 function EditStatement() {

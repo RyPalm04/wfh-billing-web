@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { getStatement, getStatementPdf, updateStatement } from '../api/statementApi'
 import { sanitizePrice, formatPrice } from '../utils/price'
 import toast from 'react-hot-toast'
@@ -14,6 +14,42 @@ function StatementDetail() {
     const [editingPayment, setEditingPayment] = useState(false)
     const [downPayment, setDownPayment] = useState('')
     const [savedPayment, setSavedPayment] = useState('')
+    const navigate = useNavigate()
+
+    function handleKeyDown(event) {
+        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+            return
+        }
+
+        if (event.key === 'e' && !editingPayment) {
+            logger.debug('E key pressed - entering down payment edit mode for statement', id)
+            setEditingPayment(true)
+        } else if (event.key === 'd' && !editingPayment) {
+            logger.debug('Shift+D key pressed - downloading PDF for statement', id)
+            handleDownloadPdf()
+        } else if (event.key === 'E' && event.shiftKey) {
+            logger.debug('Shift+E keys pressed - navigating to edit page for statement', id)
+            navigate(`/statements/${id}/edit`)
+        }
+
+        if (editingPayment) {
+            if (event.key === 'Enter') {
+                logger.debug('Saving down payment for statement', id, 'value:', downPayment)
+                handleSavePayment()
+            } else if (event.key === 'Escape') {
+                logger.debug('Cancelling down payment edit for statement', id)
+                setDownPayment(savedPayment)
+                setEditingPayment(false)
+            }
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [editingPayment, downPayment, savedPayment])
 
     useEffect(() => {
         logger.debug('Fetching statement...')
@@ -204,14 +240,14 @@ function StatementDetail() {
                 </div>
                 <div className="detail-actions">
                     <button disabled={editingPayment} className="btn btn-secondary" onClick={() => setEditingPayment(true)}>
-                        {downPayment ? 'Edit Down Payment' : 'Apply Down Payment'}
+                        {'Edit Down Payment (E)'}
                     </button>
                     <button className="btn btn-primary" onClick={handleDownloadPdf}>
-                        Download PDF
+                        Download PDF (D)
                     </button>
-                    <Link className="btn btn-secondary" to={`/statements/${id}/edit`}>
-                        Edit
-                    </Link>
+                    <button className="btn btn-secondary" onClick={() => navigate(`/statements/${id}/edit`)}>
+                        Edit (Shift+E)
+                    </button>
                 </div>
             </div>
         </div>
