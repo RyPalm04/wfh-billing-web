@@ -17,7 +17,7 @@ function StatementDetail() {
     const navigate = useNavigate()
 
     function handleKeyDown(event) {
-        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable) {
             return
         }
 
@@ -139,6 +139,12 @@ function StatementDetail() {
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Services, Facilities, & Transportation</h3>
+                    {statement.packageName && (
+                        <div className="detail-row">
+                            <span className="detail-label">Package: {statement.packageName}</span>
+                            <span className="detail-value">${statement.packagePrice}</span>
+                        </div>
+                    )}
                     {statement.services.length === 0 ? (
                         <div className="detail-row">
                             <span className="detail-label">None</span>
@@ -146,7 +152,7 @@ function StatementDetail() {
                         </div>
                     ) : statement.services.map(s => (
                         <div key={s.serviceId} className="detail-row">
-                            <span className="detail-label">{s.name}{s.inPackage ? ' (Package)' : ''}</span>
+                            <span className="detail-label">{s.name}</span>
                             <span className="detail-value">${s.price}</span>
                         </div>
                     ))}

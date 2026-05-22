@@ -30,6 +30,9 @@ function EditStatement() {
         logger.debug('Submitting updated statement with servicesForName:', servicesForName, 'serviceDate:', serviceDate, 'dateOfDeath:', dateOfDeath, 'placeOfDeath:', placeOfDeath, 'selectedServices:', selectedServices, 'selectedMerchandise:', selectedMerchandise, 'selectedSpecialCharges:', selectedSpecialCharges, 'selectedCashAdvances:', selectedCashAdvances, 'packageId:', packageId)
         e.preventDefault()
         setSubmitting(true)
+
+        const selectedPkg = packageId ? catalog.packages.find(p => p.id === packageId) : null
+
         updateStatement(id, {
             servicesForName,
             serviceDate,
@@ -39,7 +42,9 @@ function EditStatement() {
             merchandise: Object.values(selectedMerchandise).map(({ quantity, ...item }) => item),
             specialCharges: Object.values(selectedSpecialCharges),
             cashAdvances: Object.values(selectedCashAdvances),
-            packageId
+            packageId,
+            packageName: selectedPkg?.name ?? null,
+            packagePrice: selectedPkg?.defaultCost ?? null
         })
             .then(() => {
                 logger.debug('Statement updated successfully, navigating to statement details page')
@@ -72,7 +77,7 @@ function EditStatement() {
                 return next
             }
             logger.debug('Adding service', service.id, 'to selection')
-            return { ...prev, [service.id]: { serviceId: service.id, inPackage: false } }
+            return { ...prev, [service.id]: { serviceId: service.id, inPackage: false, name: service.name, price: service.defaultCost } }
         })
     }
 
@@ -87,6 +92,7 @@ function EditStatement() {
             logger.debug('Adding merchandise item', item.id, 'to selection with default price:', item.defaultCost)
             return {
                 ...prev, [item.id]: {
+                    name: item.name,
                     merchandiseId: item.id,
                     price: item.defaultCost || '',
                     description: '',
@@ -105,7 +111,7 @@ function EditStatement() {
                 return next
             }
             logger.debug('Adding special charge item', item.id, 'to selection with default price:', item.defaultCost)
-            return { ...prev, [item.id]: { specialChargeId: item.id, price: item.defaultCost || '', description: '' } }
+            return { ...prev, [item.id]: { name: item.name, specialChargeId: item.id, price: item.defaultCost || '', description: '' } }
         })
     }
 
@@ -118,7 +124,7 @@ function EditStatement() {
                 return next
             }
             logger.debug('Adding cash advance item', item.id, 'to selection')
-            return { ...prev, [item.id]: { cashAdvanceId: item.id, amount: '', provider: '' } }
+            return { ...prev, [item.id]: { name: item.name, cashAdvanceId: item.id, amount: '', provider: '' } }
         })
     }
 
@@ -190,7 +196,8 @@ function EditStatement() {
             const pkg = catalog.packages.find(p => p.id === id)
             const newSelectedServices = {}
             pkg.serviceIds.forEach(serviceId => {
-                newSelectedServices[serviceId] = { serviceId, inPackage: true }
+                const svc = catalog.services.find(s => s.id === serviceId)
+                newSelectedServices[serviceId] = { serviceId, inPackage: true, name: svc?.name, price: svc?.defaultCost }
             })
             setSelectedServices(newSelectedServices)
         }
@@ -217,7 +224,8 @@ function EditStatement() {
                     if (pkg) {
                         logger.debug('Statement has package with id:', pkg.id, 'adding package services to selected services')
                         pkg.serviceIds.forEach(serviceId => {
-                            services[serviceId] = { serviceId, inPackage: true }
+                            const svc = catalogRes.data.services.find(s => s.id === serviceId)
+                            services[serviceId] = { serviceId, inPackage: true, name: svc?.name, price: svc?.defaultCost }
                         })
                     }
                 }
