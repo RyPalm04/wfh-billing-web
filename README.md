@@ -1,16 +1,55 @@
-# React + Vite
+  # wfh-billing-web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+  React frontend for the Wright Funeral Home billing statement generator. Provides a web interface for creating, viewing, editing, and downloading billing statements.
 
-Currently, two official plugins are available:
+  ## Features
+  
+  - Create and edit billing statements with services, merchandise, special charges, and cash advances
+  - View full statement detail with itemized totals and balance due
+  - Apply down payments with inline editing
+  - Download statements as PDF
+  - First-time user guided tour on the New Statement form
+  - Fully responsive with mobile navigation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+  ## Tech Stack
+  
+  - React 19 + Vite
+  - React Router v7
+  - Axios
+  - react-hot-toast
+  - react-error-boundary
+  - Shepherd.js (guided tour)
+  - Vitest + React Testing Library
 
-## React Compiler
+  ## Getting Started
+  
+  ### Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+  - Node.js 18+
+  - [wfh-billing-api](https://github.com/RyPalm04/wfh-billing-api) running locally or accessible via URL
 
-## Expanding the ESLint configuration
+  ### Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+  ```bash
+  npm install
+
+  Environment
+
+  Copy .env and set your values:
+
+  VITE_API_KEY=your_api_key
+  VITE_API_BASE_URL=http://localhost:18080
+
+  Running
+  
+  npm run dev
+
+  Testing
+
+  npm test
+
+  Deployment
+
+  Deployed to Vercel. The master branch deploys to production automatically on push.
+
+  Adjust the deployment section if the Vercel setup is branch/tag triggered rather than push to master.
