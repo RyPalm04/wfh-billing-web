@@ -42,9 +42,13 @@ function EditStatement() {
             merchandise: Object.values(selectedMerchandise).map(({ quantity, ...item }) => item),
             specialCharges: Object.values(selectedSpecialCharges),
             cashAdvances: Object.values(selectedCashAdvances),
-            packageId,
-            packageName: selectedPkg?.name ?? null,
-            packagePrice: selectedPkg?.defaultCost ?? null
+            servicePackage: selectedPkg ? {
+                id: selectedPkg.id,
+                sortOrder: selectedPkg.sortOrder,
+                name: selectedPkg.name,
+                defaultCost: selectedPkg.defaultCost,
+                legacyPackage: selectedPkg.legacyPackage
+            } : null,
         })
             .then(() => {
                 logger.debug('Statement updated successfully, navigating to statement details page')
@@ -227,6 +231,11 @@ function EditStatement() {
                             const svc = catalogRes.data.services.find(s => s.id === serviceId)
                             services[serviceId] = { serviceId, inPackage: true, name: svc?.name, price: svc?.defaultCost }
                         })
+                    } else {
+                        logger.debug('Package is legacy, loading saved services from statement data')
+                        statementRes.data.services
+                            .filter(s => s.inPackage)
+                            .forEach(s => { services[s.serviceId] = s })
                     }
                 }
                 setSelectedServices(services)
@@ -257,7 +266,20 @@ function EditStatement() {
                 setServiceDate(statementRes.data.serviceDate ?? '')
                 setDateOfDeath(statementRes.data.dateOfDeath ?? '')
                 setPlaceOfDeath(statementRes.data.placeOfDeath)
-                setCatalog(catalogRes.data)
+                let packages = catalogRes.data.packages
+                if (statementRes.data.servicePackage?.legacyPackage && statementRes.data.packageId) {
+                    packages = [
+                        {
+                            id: statementRes.data.packageId,
+                            name: statementRes.data.servicePackage.name,
+                            defaultCost: statementRes.data.servicePackage.defaultCost,
+                            legacyPackage: true,
+                            serviceIds: statementRes.data.services.filter(s => s.inPackage).map(s => s.serviceId)
+                        },
+                        ...packages
+                    ]
+                }
+                setCatalog({ ...catalogRes.data, packages })
                 setLoading(false)
             })
             .catch(() => {
@@ -302,9 +324,16 @@ function EditStatement() {
                                 <label htmlFor="packageId">Package</label>
                                 <select id="packageId" value={packageId || ''} onChange={handlePackageChange}>
                                     <option value="">None</option>
-                                    {catalog.packages.map(pkg => (
-                                        <option key={pkg.id} value={pkg.id}>{pkg.name} — ${pkg.defaultCost}</option>
-                                    ))}
+                                    {catalog.packages.map(pkg => {
+                                        if (pkg.legacyPackage && packageId !== pkg.id) {
+                                            return null;
+                                        }
+                                        return (
+                                            <option key={pkg.id} value={pkg.id} disabled={pkg.legacyPackage}>
+                                                {pkg.name}{pkg.legacyPackage ? ' (Legacy)' : ''} — ${pkg.defaultCost}
+                                            </option>
+                                        )
+                                    })}
                                 </select>
                             </div>
                         )}

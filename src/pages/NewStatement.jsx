@@ -118,9 +118,13 @@ function NewStatement() {
 
         createStatement({
             controlNumber, servicesForName, serviceDate, dateOfDeath, placeOfDeath, reasonForEmbalming,
-            packageId,
-            packageName: selectedPackage?.name ?? null,
-            packagePrice: selectedPackage?.defaultCost ?? null,
+            servicePackage: selectedPackage ? {
+                id: selectedPackage.id,
+                sortOrder: selectedPackage.sortOrder,
+                name: selectedPackage.name,
+                defaultCost: selectedPackage.defaultCost,
+                legacyPackage: selectedPackage.legacyPackage
+            } : null,
             services: Object.values(selectedServices),
             merchandise: Object.values(selectedMerchandise).map(({ quantity, ...item }) => item),
             specialCharges: Object.values(selectedSpecialCharges),
