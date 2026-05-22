@@ -5,6 +5,7 @@ import { createStatement, getNextControlNumber } from '../api/statementApi'
 import { sanitizePrice, formatPrice } from '../utils/price'
 import Shepherd from 'shepherd.js'
 import toast from 'react-hot-toast'
+import logger from '../utils/logger'
 import 'shepherd.js/dist/css/shepherd.css'
 import './NewStatement.css'
 
@@ -27,6 +28,7 @@ function NewStatement() {
     const [errors, setErrors] = useState({})
 
     function startTour() {
+        logger.debug('Starting new statement creation tour')
         const tour = new Shepherd.Tour({
             defaultStepOptions: {
                 cancelIcon: {
@@ -78,20 +80,24 @@ function NewStatement() {
     }
 
     useEffect(() => {
+        logger.debug('NewStatement component mounted, loading catalog and next control number')
         if (!loading && !localStorage.getItem('tourSeen')) {
             startTour()
         }
     }, [loading])
 
     useEffect(() => {
+        logger.debug('Fetching catalog and next control number for new statement form')
         Promise.all([getCatalog(), getNextControlNumber()])
             .then(([catalogResponse, controlNumberResponse]) => {
+                logger.debug('Fetched catalog:', catalogResponse.data)
+                logger.debug('Fetched next control number:', controlNumberResponse.data)
                 setCatalog(catalogResponse.data)
                 setControlNumber(controlNumberResponse.data)
                 setLoading(false)
             })
             .catch((error) => {
-                console.error('Error fetching data:', error)
+                logger.error('Error fetching data:', error)
                 setError('Failed to load catalog')
                 setLoading(false)
             })
@@ -101,6 +107,7 @@ function NewStatement() {
         e.preventDefault()
         const validationErrors = validate()
         if (Object.keys(validationErrors).length > 0) {
+            logger.debug('Validation errors:', validationErrors)
             setErrors(validationErrors)
             return
         }
@@ -115,10 +122,11 @@ function NewStatement() {
             cashAdvances: Object.values(selectedCashAdvances)
         })
             .then(() => {
+                logger.debug('Statement created successfully')
                 navigate('/statements')
             })
             .catch(error => {
-                console.error('Error creating statement:', error)
+                logger.error('Error creating statement:', error)
                 toast.error('Failed to create statement')
                 setSubmitting(false)
             })
@@ -126,6 +134,7 @@ function NewStatement() {
 
     function updateMerchandiseQuantity(id, quantity, defaultCost) {
         const qty = parseInt(quantity) || 1
+        logger.debug('Updating merchandise item', id, 'quantity:', qty, 'price:', (parseFloat(defaultCost) * qty).toFixed(2)),
         setSelectedMerchandise(prev => ({
             ...prev,
             [id]: { ...prev[id], quantity: qty, price: (parseFloat(defaultCost) * qty).toFixed(2) }
@@ -134,22 +143,28 @@ function NewStatement() {
 
     function toggleService(service) {
         setSelectedServices(prev => {
+            logger.debug('Toggling service', service.id, 'current selection:', !!prev[service.id])
             if (prev[service.id]) {
+                logger.debug('Removing service', service.id, 'from selection')
                 const next = { ...prev }
                 delete next[service.id]
                 return next
             }
+            logger.debug('Adding service', service.id, 'to selection')
             return { ...prev, [service.id]: { serviceId: service.id, inPackage: false } }
         })
     }
 
     function toggleMerchandise(item) {
         setSelectedMerchandise(prev => {
+            logger.debug('Toggling merchandise item', item.id, 'current selection:', !!prev[item.id])
             if (prev[item.id]) {
+                logger.debug('Removing merchandise item', item.id, 'from selection')
                 const next = { ...prev }
                 delete next[item.id]
                 return next
             }
+            logger.debug('Adding merchandise item', item.id, 'to selection with default price:', item.defaultCost)
             return {
                 ...prev, [item.id]: {
                     merchandiseId: item.id,
@@ -163,27 +178,34 @@ function NewStatement() {
 
     function toggleSpecialCharge(item) {
         setSelectedSpecialCharges(prev => {
+            logger.debug('Toggling special charge item', item.id, 'current selection:', !!prev[item.id])
             if (prev[item.id]) {
+                logger.debug('Removing special charge item', item.id, 'from selection')
                 const next = { ...prev }
                 delete next[item.id]
                 return next
             }
+            logger.debug('Adding special charge item', item.id, 'to selection with default price:', item.defaultCost)
             return { ...prev, [item.id]: { specialChargeId: item.id, price: item.defaultCost || '', description: '' } }
         })
     }
 
     function toggleCashAdvance(item) {
         setSelectedCashAdvances(prev => {
+            logger.debug('Toggling cash advance item', item.id, 'current selection:', !!prev[item.id])
             if (prev[item.id]) {
+                logger.debug('Removing cash advance item', item.id, 'from selection')
                 const next = { ...prev }
                 delete next[item.id]
                 return next
             }
+            logger.debug('Adding cash advance item', item.id, 'to selection')
             return { ...prev, [item.id]: { cashAdvanceId: item.id, amount: '', provider: '' } }
         })
     }
 
     function updateCashAdvanceProvider(id, provider) {
+        logger.debug('Updating cash advance item', id, 'provider:', provider)
         setSelectedCashAdvances(prev => ({
             ...prev,
             [id]: { ...prev[id], provider }
@@ -191,6 +213,7 @@ function NewStatement() {
     }
 
     function updateCashAdvanceAmount(id, amount) {
+        logger.debug('Updating cash advance item', id, 'amount:', amount)
         setSelectedCashAdvances(prev => ({
             ...prev,
             [id]: { ...prev[id], amount }
@@ -198,6 +221,7 @@ function NewStatement() {
     }
 
     function updateMerchandisePrice(id, price) {
+        logger.debug('Updating merchandise item', id, 'price:', price)
         setSelectedMerchandise(prev => ({
             ...prev,
             [id]: { ...prev[id], price }
@@ -205,6 +229,7 @@ function NewStatement() {
     }
 
     function updateMerchandiseDescription(id, description) {
+        logger.debug('Updating merchandise item', id, 'description:', description)
         setSelectedMerchandise(prev => ({
             ...prev,
             [id]: { ...prev[id], description }
@@ -212,6 +237,7 @@ function NewStatement() {
     }
 
     function updateSpecialChargePrice(id, price) {
+        logger.debug('Updating special charge item', id, 'price:', price)
         setSelectedSpecialCharges(prev => ({
             ...prev,
             [id]: { ...prev[id], price }
@@ -219,6 +245,7 @@ function NewStatement() {
     }
 
     function updateSpecialChargeDescription(id, description) {
+        logger.debug('Updating special charge item', id, 'description:', description)
         setSelectedSpecialCharges(prev => ({
             ...prev,
             [id]: { ...prev[id], description }
@@ -226,9 +253,11 @@ function NewStatement() {
     }
 
     function handlePackageChange(e) {
+        logger.debug('Handling package change', e.target.value)
         const id = e.target.value ? parseInt(e.target.value) : null
         setPackageId(id)
         if (!id) {
+            logger.debug('No package selected, clearing package services from selection')
             setSelectedServices(prev => {
                 const next = {}
                 Object.entries(prev).forEach(([serviceId, item]) => {
@@ -239,6 +268,7 @@ function NewStatement() {
                 return next
             })
         } else {
+            logger.debug('Package selected with id', id, 'adding package services to selection')
             const pkg = catalog.packages.find(p => p.id === id)
             const newSelectedServices = {}
             pkg.serviceIds.forEach(serviceId => {
@@ -249,37 +279,48 @@ function NewStatement() {
     }
 
     function validate() {
+        logger.debug('Validating statement form with selected merchandise, special charges, and cash advances')
         const errors = {}
 
         Object.entries(selectedMerchandise).forEach(([id, item]) => {
             const catalogItem = catalog.merchandise.find(m => m.id === parseInt(id))
+            logger.debug('Validating merchandise item', id)
             if (!catalogItem.defaultCost && !parseFloat(item.price)) {
+                logger.debug('Validation error for merchandise item', id, 'price is required')
                 errors[`merchandise_${id}`] = true
             }
             if (catalogItem.requiresDescription && catalogItem.pricingMode !== 'PER_UNIT' && !item.description?.trim()) {
+                logger.debug('Validation error for merchandise item', id, 'description is required')
                 errors[`merchandise_desc_${id}`] = true
             }
         })
 
         Object.entries(selectedSpecialCharges).forEach(([id, item]) => {
+            logger.debug('Validating special charge item', id)
             const catalogItem = catalog.specialCharges.find(sc => sc.id === parseInt(id))
             if (!catalogItem.defaultCost && !parseFloat(item.price)) {
+                logger.debug('Validation error for special charge item', id, 'price is required')
                 errors[`specialCharge_${id}`] = true
             }
             if (catalogItem.requiresDescription && !item.description?.trim()) {
+                logger.debug('Validation error for special charge item', id, 'description is required')
                 errors[`specialCharge_desc_${id}`] = true
             }
         })
 
         Object.entries(selectedCashAdvances).forEach(([id, item]) => {
+            logger.debug('Validating cash advance item', id)
             if (!parseFloat(item.amount)) {
+                logger.debug('Validation error for cash advance item', id, 'amount is required')
                 errors[`cashAdvance_${id}`] = true
             }
             if (!item.provider?.trim()) {
+                logger.debug('Validation error for cash advance item', id, 'provider is required')
                 errors[`cashAdvance_provider_${id}`] = true
             }
         })
 
+        logger.debug('Validation completed with errors:', errors)
         return errors
     }
 

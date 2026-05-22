@@ -26,6 +26,7 @@ function EditStatement() {
     const [packageId, setPackageId] = useState(null)
 
     function handleSubmit(e) {
+        logger.debug('Submitting updated statement with servicesForName:', servicesForName, 'serviceDate:', serviceDate, 'dateOfDeath:', dateOfDeath, 'placeOfDeath:', placeOfDeath, 'selectedServices:', selectedServices, 'selectedMerchandise:', selectedMerchandise, 'selectedSpecialCharges:', selectedSpecialCharges, 'selectedCashAdvances:', selectedCashAdvances, 'packageId:', packageId)
         e.preventDefault()
         setSubmitting(true)
         updateStatement(id, {
@@ -40,11 +41,13 @@ function EditStatement() {
             packageId
         })
             .then(() => {
+                logger.debug('Statement updated successfully, navigating to statement details page')
                 toast.success('Statement updated successfully')
                 setSubmitting(false)
                 navigate(`/statements/${id}`)
             })
             .catch(() => {
+                logger.error('Failed to save statement, id:', id)
                 toast.error('Failed to save statement')
                 setSubmitting(false)
             })
@@ -52,6 +55,7 @@ function EditStatement() {
 
     function updateMerchandiseQuantity(id, quantity, defaultCost) {
         const qty = parseInt(quantity) || 1
+        logger.debug('Updating merchandise item', id, 'quantity:', qty, 'price:', (parseFloat(defaultCost) * qty).toFixed(2))
         setSelectedMerchandise(prev => ({
             ...prev,
             [id]: { ...prev[id], quantity: qty, price: (parseFloat(defaultCost) * qty).toFixed(2) }
@@ -61,10 +65,12 @@ function EditStatement() {
     function toggleService(service) {
         setSelectedServices(prev => {
             if (prev[service.id]) {
+                logger.debug('Removing service', service.id, 'from selection')
                 const next = { ...prev }
                 delete next[service.id]
                 return next
             }
+            logger.debug('Adding service', service.id, 'to selection')
             return { ...prev, [service.id]: { serviceId: service.id, inPackage: false } }
         })
     }
@@ -72,10 +78,12 @@ function EditStatement() {
     function toggleMerchandise(item) {
         setSelectedMerchandise(prev => {
             if (prev[item.id]) {
+                logger.debug('Removing merchandise item', item.id, 'from selection')
                 const next = { ...prev }
                 delete next[item.id]
                 return next
             }
+            logger.debug('Adding merchandise item', item.id, 'to selection with default price:', item.defaultCost)
             return {
                 ...prev, [item.id]: {
                     merchandiseId: item.id,
@@ -90,10 +98,12 @@ function EditStatement() {
     function toggleSpecialCharge(item) {
         setSelectedSpecialCharges(prev => {
             if (prev[item.id]) {
+                logger.debug('Removing special charge item', item.id, 'from selection')
                 const next = { ...prev }
                 delete next[item.id]
                 return next
             }
+            logger.debug('Adding special charge item', item.id, 'to selection with default price:', item.defaultCost)
             return { ...prev, [item.id]: { specialChargeId: item.id, price: item.defaultCost || '', description: '' } }
         })
     }
@@ -101,15 +111,18 @@ function EditStatement() {
     function toggleCashAdvance(item) {
         setSelectedCashAdvances(prev => {
             if (prev[item.id]) {
+                logger.debug('Removing cash advance item', item.id, 'from selection')
                 const next = { ...prev }
                 delete next[item.id]
                 return next
             }
+            logger.debug('Adding cash advance item', item.id, 'to selection')
             return { ...prev, [item.id]: { cashAdvanceId: item.id, amount: '', provider: '' } }
         })
     }
 
     function updateCashAdvanceProvider(id, provider) {
+        logger.debug('Updating cash advance item', id, 'provider:', provider)
         setSelectedCashAdvances(prev => ({
             ...prev,
             [id]: { ...prev[id], provider }
@@ -117,6 +130,7 @@ function EditStatement() {
     }
 
     function updateCashAdvanceAmount(id, amount) {
+        logger.debug('Updating cash advance item', id, 'amount:', amount)
         setSelectedCashAdvances(prev => ({
             ...prev,
             [id]: { ...prev[id], amount }
@@ -124,6 +138,7 @@ function EditStatement() {
     }
 
     function updateMerchandisePrice(id, price) {
+        logger.debug('Updating merchandise item', id, 'price:', price)
         setSelectedMerchandise(prev => ({
             ...prev,
             [id]: { ...prev[id], price }
@@ -131,6 +146,7 @@ function EditStatement() {
     }
 
     function updateMerchandiseDescription(id, description) {
+        logger.debug('Updating merchandise item', id, 'description:', description)
         setSelectedMerchandise(prev => ({
             ...prev,
             [id]: { ...prev[id], description }
@@ -138,6 +154,7 @@ function EditStatement() {
     }
 
     function updateSpecialChargePrice(id, price) {
+        logger.debug('Updating special charge item', id, 'price:', price)
         setSelectedSpecialCharges(prev => ({
             ...prev,
             [id]: { ...prev[id], price }
@@ -145,6 +162,7 @@ function EditStatement() {
     }
 
     function updateSpecialChargeDescription(id, description) {
+        logger.debug('Updating special charge item', id, 'description:', description)
         setSelectedSpecialCharges(prev => ({
             ...prev,
             [id]: { ...prev[id], description }
@@ -152,9 +170,11 @@ function EditStatement() {
     }
 
     function handlePackageChange(e) {
+        logger.debug('Package selection changed, new value:', e.target.value)
         const id = e.target.value ? parseInt(e.target.value) : null
         setPackageId(id)
         if (!id) {
+            logger.debug('No package selected, removing package services from selection')
             setSelectedServices(prev => {
                 const next = {}
                 Object.entries(prev).forEach(([serviceId, item]) => {
@@ -165,6 +185,7 @@ function EditStatement() {
                 return next
             })
         } else {
+            logger.debug('Package selected with id:', id, 'adding package services to selection')
             const pkg = catalog.packages.find(p => p.id === id)
             const newSelectedServices = {}
             pkg.serviceIds.forEach(serviceId => {
@@ -175,20 +196,25 @@ function EditStatement() {
     }
 
     useEffect(() => {
+        logger.debug('Loading statement and catalog data for statement id:', id)
         Promise.all([getStatement(id), getCatalog()])
             .then(([statementRes, catalogRes]) => {
+                logger.debug('Fetched statement data:', statementRes.data)
+                logger.debug('Fetched catalog data:', catalogRes.data)
                 setStatement(statementRes.data)
                 setControlNumber(statementRes.data.controlNumber)
 
                 const services = {}
                 statementRes.data.services.forEach(s => {
                     if (!s.inPackage) {
+                        logger.debug('Adding service to selected services from statement data', s.serviceId)
                         services[s.serviceId] = s
                     }
                 })
                 if (statementRes.data.packageId) {
                     const pkg = catalogRes.data.packages.find(p => p.id === statementRes.data.packageId)
                     if (pkg) {
+                        logger.debug('Statement has package with id:', pkg.id, 'adding package services to selected services')
                         pkg.serviceIds.forEach(serviceId => {
                             services[serviceId] = { serviceId, inPackage: true }
                         })
@@ -197,6 +223,7 @@ function EditStatement() {
                 setSelectedServices(services)
                 const merchandise = {}
                 statementRes.data.merchandise.forEach(m => {
+                    logger.debug('Processing merchandise item from statement data', m.merchandiseId)
                     const catalogItem = catalogRes.data.merchandise.find(cm => cm.id === m.merchandiseId)
                     const quantity = catalogItem?.pricingMode === 'PER_UNIT'
                         ? Math.round(parseFloat(m.price) / parseFloat(catalogItem.defaultCost))
@@ -206,11 +233,13 @@ function EditStatement() {
                 setSelectedMerchandise(merchandise)
                 const specialCharges = {}
                 statementRes.data.specialCharges.forEach(sc => {
+                    logger.debug('Processing special charge item from statement data', sc.specialChargeId)
                     specialCharges[sc.specialChargeId] = { ...sc, price: sc.price?.toString() ?? '' }
                 })
                 setSelectedSpecialCharges(specialCharges)
                 const cashAdvances = {}
                 statementRes.data.cashAdvances.forEach(ca => {
+                    logger.debug('Processing cash advance item from statement data', ca.cashAdvanceId)
                     cashAdvances[ca.cashAdvanceId] = { ...ca, amount: ca.amount?.toString() ?? '' }
                 })
                 setSelectedCashAdvances(cashAdvances)
@@ -223,6 +252,7 @@ function EditStatement() {
                 setLoading(false)
             })
             .catch(() => {
+                logger.error('Failed to load data for statement id:', id)
                 setError('Failed to load data')
                 setLoading(false)
             })

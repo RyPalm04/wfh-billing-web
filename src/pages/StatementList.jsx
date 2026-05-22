@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getStatements } from '../api/statementApi'
 import { Link } from 'react-router-dom'
+import logger from '../utils/logger'
 import './StatementList.css'
 
 function StatementList() {
@@ -12,12 +13,15 @@ function StatementList() {
     const [toDate, setToDate] = useState('')
 
     useEffect(() => {
+        logger.debug('Fetching statements...')
         getStatements()
             .then(response => {
+                logger.debug('Fetched statements:', response.data)
                 setStatements(response.data)
                 setLoading(false)
             })
             .catch(err => {
+                logger.error('Error fetching statements:', err)
                 setError('Failed to load statements')
                 setLoading(false)
             })
