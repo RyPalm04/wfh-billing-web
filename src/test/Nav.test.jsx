@@ -6,7 +6,7 @@ import Nav from '../components/Nav'
 
 describe('Nav', () => {
 
-  it('has a link to the statement list', () => {
+  it('has a link to the home screen', () => {
     render(
       <MemoryRouter>
         <Nav />
@@ -44,13 +44,13 @@ describe('Nav', () => {
     render(<MemoryRouter><Nav /></MemoryRouter>)
     fireEvent.click(screen.getByLabelText('Toggle navigation'))
     expect(screen.getByLabelText('Toggle navigation')).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('link', { name: 'Statements' }).closest('.nav-actions')).toHaveClass('nav-actions--open')
+    expect(screen.getByRole('link', { name: 'View Statements' }).closest('.nav-actions')).toHaveClass('nav-actions--open')
   })
 
   it('closes nav menu when a link is clicked', () => {
     render(<MemoryRouter><Nav /></MemoryRouter>)
     fireEvent.click(screen.getByLabelText('Toggle navigation'))
-    fireEvent.click(screen.getByRole('link', { name: 'Statements' }))
+    fireEvent.click(screen.getByRole('link', { name: 'View Statements' }))
     expect(screen.getByLabelText('Toggle navigation')).toHaveAttribute('aria-expanded', 'false')
   })
 })
