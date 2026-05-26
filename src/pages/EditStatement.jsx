@@ -512,7 +512,7 @@ function EditStatement() {
                     </div>
                 )}
                 <div className="form-submit form-actions">
-                    <button className="btn btn-secondary" onClick={() => navigate(`/statements/${id}`)}>
+                    <button type="button" className="btn btn-secondary" onClick={() => navigate(`/statements/${id}`)}>
                         Cancel
                     </button>
                     <button className="btn btn-primary" type="submit" disabled={submitting}>
