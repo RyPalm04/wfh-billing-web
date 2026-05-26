@@ -6,6 +6,7 @@ import StatementList from './pages/StatementList'
 import StatementDetail from './pages/StatementDetail'
 import NewStatement from './pages/NewStatement'
 import EditStatement from './pages/EditStatement'
+import Home from './pages/Home'
 import Nav from './components/Nav'
 import logger from './utils/logger'
 import { Toaster } from 'react-hot-toast'
@@ -49,7 +50,7 @@ function AppContent() {
       <main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <Routes>
-            <Route path="/" element={<StatementList />} />
+            <Route path="/" element={<Home />} />
             <Route path="/statements" element={<StatementList />} />
             <Route path="/statements/new" element={<NewStatement />} />
             <Route path="/statements/:id" element={<StatementDetail />} />
