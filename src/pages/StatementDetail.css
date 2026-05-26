@@ -113,3 +113,9 @@
     font-size: 16px;
     color: var(--green);
   }
+
+  .detail-row--package-service .detail-label {
+    padding-left: 1rem;
+    font-style: italic;
+    color: var(--muted);
+  }
