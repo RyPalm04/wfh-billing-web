@@ -24,7 +24,7 @@ function Nav() {
             </button>
             <div className={`nav-actions ${menuOpen ? 'nav-actions--open' : ''}`}>
                 <Link to="/statements/new" className="nav-link" onClick={() => setMenuOpen(false)}>New Statement</Link>
-                <Link to="/statements" className="nav-link" onClick={() => setMenuOpen(false)}>Statements</Link>
+                <Link to="/statements" className="nav-link" onClick={() => setMenuOpen(false)}>View Statements</Link>
             </div>
         </nav>
     )
