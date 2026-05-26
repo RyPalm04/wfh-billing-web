@@ -107,7 +107,13 @@ function StatementDetail() {
     if (error) return <div>{error}</div>
 
 
-    const servicesTotal = statement.services.reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0).toFixed(2)
+    const packageCost = parseFloat(statement.servicePackage?.defaultCost || 0)
+    const servicesTotal = (
+        packageCost +
+        statement.services
+            .filter(s => !s.inPackage)
+            .reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0)
+    ).toFixed(2)
     const merchandiseTotal = statement.merchandise.reduce((sum, m) => sum + (parseFloat(m.price) || 0), 0).toFixed(2)
     const specialChargesTotal = statement.specialCharges.reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0).toFixed(2)
     const cashAdvancesTotal = statement.cashAdvances.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0).toFixed(2)
@@ -140,14 +146,39 @@ function StatementDetail() {
                 <div className="detail-section">
                     <h3 className="detail-section-header">Services, Facilities, & Transportation</h3>
                     {statement.servicePackage && (
+                        <>
                         <div className="detail-row">
                             <span className="detail-label">
                                 Package: {statement.servicePackage.name}{statement.servicePackage.legacyPackage ? ' (Legacy)' : ''}
                             </span>
                             <span className="detail-value">${statement.servicePackage.defaultCost}</span>
                         </div>
+                        {statement.services.filter(s => s.inPackage).map(s => (
+                            <div key={s.serviceId} className="detail-row detail-row--package-service">
+                                <span className="detail-label">{s.name}</span>
+                                <span className="detail-value">Included</span>
+                            </div>
+                        ))}
+                        </>
                     )}
-                    {statement.services.length === 0 ? (
+                    {(() => {
+                        const nonPackageServices = statement.services.filter(s => !s.inPackage)
+                        if (nonPackageServices.length === 0 && !statement.servicePackage) {
+                            return (
+                                <div className="detail-row">
+                                    <span className="detail-label">None</span>
+                                    <span className="detail-value">0.00</span>
+                                </div>
+                            )
+                        }
+                        return nonPackageServices.map(s => (
+                            <div key={s.serviceId} className="detail-row">
+                                <span className="detail-label">{s.name}</span>
+                                <span className="detail-value">${s.price}</span>
+                            </div>
+                        ))
+                    })()}
+                    {/* {statement.services.length === 0 ? (
                         <div className="detail-row">
                             <span className="detail-label">None</span>
                             <span className="detail-value">$0.00</span>
@@ -157,7 +188,7 @@ function StatementDetail() {
                             <span className="detail-label">{s.name}</span>
                             <span className="detail-value">${s.price}</span>
                         </div>
-                    ))}
+                    ))} */}
                     <div className="detail-row detail-section-total">
                         <span className="detail-label">Services Total</span>
                         <span className="detail-value">${servicesTotal}</span>
