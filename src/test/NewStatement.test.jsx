@@ -227,7 +227,7 @@ describe('NewStatement', () => {
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    services: [{ serviceId: 1, inPackage: false }]
+                    services: [expect.objectContaining({ serviceId: 1, inPackage: false })]
                 })
             )
         })
@@ -247,7 +247,7 @@ describe('NewStatement', () => {
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    merchandise: [{ merchandiseId: 1, price: '2500.00', description: 'Oak casket' }]
+                    merchandise: [expect.objectContaining({ merchandiseId: 1, price: '2500.00', description: 'Oak casket' })]
                 })
             )
         })
@@ -268,7 +268,7 @@ describe('NewStatement', () => {
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    cashAdvances: [{ cashAdvanceId: 1, provider: 'Greenwood Cemetery', amount: '1500.00' }]
+                    cashAdvances: [expect.objectContaining({ cashAdvanceId: 1, provider: 'Greenwood Cemetery', amount: '1500.00' })]
                 })
             )
         })
@@ -332,8 +332,8 @@ describe('NewStatement', () => {
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    packageId: 1,
-                    services: [{ serviceId: 1, inPackage: true }]
+                    servicePackage: expect.objectContaining({ id: 1}),
+                    services: [expect.objectContaining({ serviceId: 1, inPackage: true })]
                 })
             )
         })
@@ -383,7 +383,7 @@ describe('NewStatement', () => {
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    merchandise: [{ merchandiseId: 3, price: '30.00', description: '' }]
+                    merchandise: [expect.objectContaining({ merchandiseId: 3, price: '30.00', description: '' })]
                 })
             )
         })
