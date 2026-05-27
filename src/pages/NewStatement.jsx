@@ -214,6 +214,14 @@ function NewStatement() {
         })
     }
 
+    function updateServiceDescription(id, description) {
+        logger.debug('Updating service item', id, 'description:', description)
+        setSelectedServices(prev => ({
+            ...prev,
+            [id]: { ...prev[id], description }
+        }))
+    }
+
     function updateCashAdvanceProvider(id, provider) {
         logger.debug('Updating cash advance item', id, 'provider:', provider)
         setSelectedCashAdvances(prev => ({
@@ -227,6 +235,14 @@ function NewStatement() {
         setSelectedCashAdvances(prev => ({
             ...prev,
             [id]: { ...prev[id], amount }
+        }))
+    }
+
+    function updateServicePrice(id, price) {
+        logger.debug('Updating service item', id, 'price:', price)
+        setSelectedServices(prev => ({
+            ...prev,
+            [id]: { ...prev[id], price }
         }))
     }
 
@@ -396,7 +412,38 @@ function NewStatement() {
                                     />
                                     {service.name}
                                 </label>
-                                <span className="catalog-item-price">${service.defaultCost}</span>
+                                {!selectedServices[service.id] && service.defaultCost && (
+                                    <span className="catalog-item-price">${service.defaultCost}</span>
+                                )}
+                                {selectedServices[service.id] && (
+                                    <div className="catalog-item-inputs">
+                                        {service.requiresDescription && (
+                                            <input
+                                                type="text"
+                                                aria-label={`Description for ${service.name}`}
+                                                placeholder="Description"
+                                                className="catalog-input-text"
+                                                value={selectedServices[service.id].description}
+                                                onChange={e => updateServiceDescription(service.id, e.target.value)}
+                                            />
+                                        )}
+                                        {errors[`service_desc_${service.id}`] && <div className="error">Description required</div>}
+                                        {service.defaultCost ? (
+                                            <span className="catalog-item-price">${service.defaultCost}</span>
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                aria-label={`Price for ${service.name}`}
+                                                placeholder="0.00"
+                                                className="catalog-input-price"
+                                                value={selectedServices[service.id].price}
+                                                onChange={e => updateServicePrice(service.id, sanitizePrice(e.target.value))}
+                                                onBlur={e => updateServicePrice(service.id, formatPrice(e.target.value))}
+                                            />
+                                        )}
+                                        {errors[`service_${service.id}`] && <div className="error">Price required</div>}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
