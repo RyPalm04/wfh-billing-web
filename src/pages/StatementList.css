@@ -21,6 +21,7 @@
     font-weight: 600;
     user-select: none;
     border-bottom: 2px solid var(--border);
+    white-space: nowrap;
 }
 
 .statement-table tbody tr {
@@ -54,7 +55,6 @@
     border-right: 1px solid var(--border);
     border-radius: 0 6px 6px 0;
     color: var(--secondary);
-    text-align: right;
 }
 
 .statement-number {

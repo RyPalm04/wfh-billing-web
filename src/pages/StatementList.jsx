@@ -9,7 +9,16 @@ import './StatementList.css'
 const columns = [
     { accessorKey: 'controlNumber', header: 'Control #' },
     { accessorKey: 'servicesForName', header: 'Name' },
-    { accessorKey: 'serviceDate', header: 'Service Date' },
+    {
+        accessorKey: 'serviceDate',
+        header: 'Service Date',
+        cell: ({ getValue }) => {
+            const value = getValue()
+            if (!value) return 'N/A'
+            const [year, month, day] = value.split('-')
+            return `${month}/${day}/${year}`
+        }
+    },
 ]
 
 function StatementList() {
