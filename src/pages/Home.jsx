@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import splashLogo from '../assets/wfh splash logo.jpg'
 import './Home.css'
 
 function Home() {
@@ -8,8 +7,7 @@ function Home() {
     return (
         <div className="home">
             <div className="home-hero">
-                <img src={splashLogo} alt="Wright Funeral Home" className="home-logo" />
-                <h1 className="home-title">Welcome to the Billing Statement Generator</h1>
+                <h1 className="home-title">Funeral Home Statement Manager</h1>
                 <p className="home-subtitle">Manage and generate billing statements from anywhere.</p>
                 <div className="home-actions">
                     <button className="btn btn-primary" onClick={() => navigate('/statements/new')}>New Statement</button>

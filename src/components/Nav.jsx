@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import logo from '../assets/app-icon.png'
+import logo from '/favicon.svg'
 import './Nav.css'
 
 function Nav() {
@@ -9,8 +9,8 @@ function Nav() {
     return (
         <nav className="nav">
             <Link to="/" className="nav-brand">
-                <img src={logo} alt="Wright Funeral Home Logo" />
-                Wright Funeral Home
+                <img src={logo} alt="Funeral Home Statement Manager" />
+                Funeral Home Statement Manager
             </Link>
             <button
                 className={`nav-hamburger ${menuOpen ? 'nav-hamburger--open' : ''}`}
