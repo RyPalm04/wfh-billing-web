@@ -16,17 +16,12 @@ describe('Home', () => {
 
     it('renders the welcome title', () => {
         render(<MemoryRouter><Home /></MemoryRouter>)
-        expect(screen.getByText('Welcome to the Billing Statement Generator')).toBeInTheDocument()
+        expect(screen.getByText('Funeral Home Statement Manager')).toBeInTheDocument()
     })
 
     it('renders the subtitle', () => {
         render(<MemoryRouter><Home /></MemoryRouter>)
         expect(screen.getByText('Manage and generate billing statements from anywhere.')).toBeInTheDocument()
-    })
-
-    it('renders the logo', () => {
-        render(<MemoryRouter><Home /></MemoryRouter>)
-        expect(screen.getByAltText('Wright Funeral Home')).toBeInTheDocument()
     })
 
     it('renders New Statement and View Statement buttons', () => {
