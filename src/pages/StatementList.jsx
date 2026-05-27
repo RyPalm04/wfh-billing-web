@@ -3,6 +3,7 @@ import { getStatements } from '../api/statementApi'
 import { Link } from 'react-router-dom'
 import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table'
 import { useNavigate } from 'react-router-dom'
+import { MdArrowUpward, MdArrowDownward, MdSwapVert } from 'react-icons/md'
 import logger from '../utils/logger'
 import './StatementList.css'
 
@@ -102,7 +103,7 @@ function StatementList() {
                                 {headerGroup.headers.map(header => (
                                     <th key={header.id} onClick={header.column.getToggleSortingHandler()} style={{ cursor: 'pointer' }}>
                                         {flexRender(header.column.columnDef.header, header.getContext())}
-                                        {header.column.getIsSorted() === 'asc' ? ' ↑' : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
+                                        {header.column.getIsSorted() === 'asc' ? <MdArrowUpward size={10} /> : header.column.getIsSorted() === 'desc' ? <MdArrowDownward size={10} /> : <MdSwapVert />}
                                     </th>
                                 ))}
                             </tr>
