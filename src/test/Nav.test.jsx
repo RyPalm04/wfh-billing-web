@@ -12,7 +12,7 @@ describe('Nav', () => {
         <Nav />
       </MemoryRouter>
     )
-    expect(screen.getByRole('link', { name: /wright funeral home/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /funeral home statement manager/i })).toBeInTheDocument()
   })
 
   it('has a link to the new statement page', () => {
@@ -30,7 +30,7 @@ describe('Nav', () => {
         <Nav />
       </MemoryRouter>
     )
-    expect(screen.getByRole('img', { name: /wright funeral home logo/i })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /statement manager/i })).toBeInTheDocument()
   })
 
   it('renders hamburger button with correct aria attributes', () => {
