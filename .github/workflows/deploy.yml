@@ -3,7 +3,8 @@
   on:
     push:
       tags:
-        - 'v*-beta'
+        - 'v*-beta*'
+        - 'v*-rc*'
         - 'v*'
   
   jobs:
@@ -21,7 +22,7 @@
 
     deploy-preview:
       needs: test
-      if: contains(github.ref, 'beta')
+      if: contains(github.ref, 'beta') || contains(github.ref, 'rc')      
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
@@ -44,7 +45,7 @@
 
     deploy-production:
       needs: test
-      if: contains(github.ref, 'beta') == false
+      if: contains(github.ref, 'beta') == false && contains(github.ref, 'rc') == false
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
