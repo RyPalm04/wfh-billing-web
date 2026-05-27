@@ -31,10 +31,16 @@
         - name: Install Vercel CLI
           run: npm install -g vercel
         - name: Deploy to Vercel Preview
-          run: vercel deploy --token=${{ secrets.VERCEL_TOKEN }}
+          id: deploy
+          run: echo "url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
           env:
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
             VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        - name: Alias deployment  
+          run: |
+            TAG=${GITHUB_REF#refs/tags/}
+            BETA_PART=$(echo $TAG | grep -o 'beta\.[0-9]*' | tr -d '.')
+            vercel alias set ${{ steps.deploy.outputs.url }} wfh-billing-git-${BETA_PART}.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
 
     deploy-production:
       needs: test
