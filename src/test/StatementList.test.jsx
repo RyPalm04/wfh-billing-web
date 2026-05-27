@@ -29,9 +29,12 @@ describe('StatementList', () => {
         statementApi.getStatements.mockResolvedValue({ data: mockStatements })
         render(<MemoryRouter><StatementList /></MemoryRouter>)
         await waitFor(() => {
-            expect(screen.getByText(/#101 John Doe/i)).toBeInTheDocument()
-            expect(screen.getByText(/#102 Jane Smith/i)).toBeInTheDocument()
-            expect(screen.getByText(/#103 Bob Johnson/i)).toBeInTheDocument()
+            expect(screen.getByText('101')).toBeInTheDocument()
+            expect(screen.getByText('John Doe')).toBeInTheDocument()
+            expect(screen.getByText('102')).toBeInTheDocument()
+            expect(screen.getByText('Jane Smith')).toBeInTheDocument()
+            expect(screen.getByText('103')).toBeInTheDocument()
+            expect(screen.getByText('Bob Johnson')).toBeInTheDocument()
         })
     })
 
@@ -66,9 +69,12 @@ describe('StatementList', () => {
         render(<MemoryRouter><StatementList /></MemoryRouter>)
         await waitFor(() => expect(screen.getByLabelText(/Search/i)).toBeInTheDocument())
         fireEvent.change(screen.getByLabelText(/Search/i), { target: { value: 'Jane' } })
-        expect(screen.getByText(/#102 Jane Smith/i)).toBeInTheDocument()
-        expect(screen.queryByText(/#101 John Doe/i)).not.toBeInTheDocument()
-        expect(screen.queryByText(/#103 Bob Johnson/i)).not.toBeInTheDocument()
+        expect(screen.queryByText('101')).not.toBeInTheDocument()
+        expect(screen.queryByText('John Doe')).not.toBeInTheDocument()
+        expect(screen.getByText('102')).toBeInTheDocument()
+        expect(screen.getByText('Jane Smith')).toBeInTheDocument()
+        expect(screen.queryByText('103')).not.toBeInTheDocument()
+        expect(screen.queryByText('Bob Johnson')).not.toBeInTheDocument()
     })
 
     it('filters by control number', async () => {
@@ -76,9 +82,12 @@ describe('StatementList', () => {
         render(<MemoryRouter><StatementList /></MemoryRouter>)
         await waitFor(() => expect(screen.getByLabelText(/Search/i)).toBeInTheDocument())
         fireEvent.change(screen.getByLabelText(/Search/i), { target: { value: '103' } })
-        expect(screen.getByText(/#103 Bob Johnson/i)).toBeInTheDocument()
-        expect(screen.queryByText(/#101 John Doe/i)).not.toBeInTheDocument()
-        expect(screen.queryByText(/#102 Jane Smith/i)).not.toBeInTheDocument()
+        expect(screen.queryByText('101')).not.toBeInTheDocument()
+        expect(screen.queryByText('John Doe')).not.toBeInTheDocument()
+        expect(screen.queryByText('102')).not.toBeInTheDocument()
+        expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument()
+        expect(screen.getByText('103')).toBeInTheDocument()
+        expect(screen.getByText('Bob Johnson')).toBeInTheDocument()
     })
 
     it('filters by date range', async () => {
@@ -87,9 +96,12 @@ describe('StatementList', () => {
         await waitFor(() => expect(screen.getByLabelText(/From/i)).toBeInTheDocument())
         fireEvent.change(screen.getByLabelText(/From/i), { target: { value: '2024-02-01' } })
         fireEvent.change(screen.getByLabelText(/To/i), { target: { value: '2024-02-28' } })
-        expect(screen.getByText(/#102 Jane Smith/i)).toBeInTheDocument()
-        expect(screen.queryByText(/#101 John Doe/i)).not.toBeInTheDocument()
-        expect(screen.queryByText(/#103 Bob Johnson/i)).not.toBeInTheDocument()
+        expect(screen.queryByText('101')).not.toBeInTheDocument()
+        expect(screen.queryByText('John Doe')).not.toBeInTheDocument()
+        expect(screen.getByText('102')).toBeInTheDocument()
+        expect(screen.getByText('Jane Smith')).toBeInTheDocument()
+        expect(screen.queryByText('103')).not.toBeInTheDocument()
+        expect(screen.queryByText('Bob Johnson')).not.toBeInTheDocument()
     })
 
     it('shows no results message when filter matches nothing', async () => {
@@ -106,8 +118,30 @@ describe('StatementList', () => {
         await waitFor(() => expect(screen.getByLabelText(/Search/i)).toBeInTheDocument())
         fireEvent.change(screen.getByLabelText(/Search/i), { target: { value: 'Jane' } })
         fireEvent.change(screen.getByLabelText(/Search/i), { target: { value: '' } })
-        expect(screen.getByText(/#101 John Doe/i)).toBeInTheDocument()
-        expect(screen.getByText(/#102 Jane Smith/i)).toBeInTheDocument()
-        expect(screen.getByText(/#103 Bob Johnson/i)).toBeInTheDocument()
+        expect(screen.getByText('101')).toBeInTheDocument()
+        expect(screen.getByText('John Doe')).toBeInTheDocument()
+        expect(screen.getByText('102')).toBeInTheDocument()
+        expect(screen.getByText('Jane Smith')).toBeInTheDocument()
+        expect(screen.getByText('103')).toBeInTheDocument()
+        expect(screen.getByText('Bob Johnson')).toBeInTheDocument()
+    })
+
+    it('sorts by column header click', async () => {
+        statementApi.getStatements.mockResolvedValue({ data: mockStatements })
+        render(<MemoryRouter><StatementList /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByText('Name')).toBeInTheDocument())
+        fireEvent.click(screen.getByText('Name'))
+        const rows = screen.getAllByRole('row')
+        expect(rows[1]).toHaveTextContent('Bob Johnson')
+    })
+
+    it('shows N/A for missing service date', async () => {
+        statementApi.getStatements.mockResolvedValue({
+            data: [
+                { id: 1, controlNumber: 101, servicesForName: 'John Doe', serviceDate: null, savedAt: '2024-01-15T10:00:00Z' }
+            ]
+        })
+        render(<MemoryRouter><StatementList /></MemoryRouter>)
+        await waitFor(() => expect(screen.getByText('N/A')).toBeInTheDocument())
     })
 })
