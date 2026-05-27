@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { getStatements } from '../api/statementApi'
 import { Link } from 'react-router-dom'
 import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table'
@@ -10,11 +10,6 @@ const columns = [
     { accessorKey: 'controlNumber', header: 'Control #' },
     { accessorKey: 'servicesForName', header: 'Name' },
     { accessorKey: 'serviceDate', header: 'Service Date' },
-    {
-        accessorFn: row => new Date(row.savedAt).toLocaleString(),
-        id: 'savedAt',
-        header: 'Saved'
-    },
 ]
 
 function StatementList() {
@@ -24,7 +19,7 @@ function StatementList() {
     const [search, setSearch] = useState('')
     const [fromDate, setFromDate] = useState('')
     const [toDate, setToDate] = useState('')
-    const [sorting, setSorting] = useState([])
+    const [sorting, setSorting] = useState([{ id: 'controlNumber', desc: true }])
 
     const navigate = useNavigate()
 
@@ -44,14 +39,14 @@ function StatementList() {
     }, [])
 
 
-    const filtered = statements.filter(s => {
+    const filtered = useMemo(() => statements.filter(s => {
         const matchesSearch = search === '' ||
             s.servicesForName.toLowerCase().includes(search.toLowerCase()) ||
             s.controlNumber.toString().includes(search)
         const matchesFrom = fromDate === '' || s.serviceDate >= fromDate
         const matchesTo = toDate === '' || s.serviceDate <= toDate
         return matchesSearch && matchesFrom && matchesTo
-    })
+    }), [statements, search, fromDate, toDate])
 
     const tableInstance = useReactTable({
         columns,
@@ -116,17 +111,6 @@ function StatementList() {
                         ))}
                     </tbody>
                 </table>
-                // <ul>
-                //     {filtered.map(statement => (
-                //         <li key={statement.id}>
-                //             <Link to={`/statements/${statement.id}`}>
-                //                 <span className="statement-number">#{statement.controlNumber} {statement.servicesForName}</span>
-                //                 <span className="statement-service-date"> Service: {statement.serviceDate}</span>
-                //                 <span className="statement-saved-date"> Saved: {new Date(statement.savedAt).toLocaleString()}</span>
-                //             </Link>
-                //         </li>
-                //     ))}
-                // </ul>
             )}
         </div>
     )
