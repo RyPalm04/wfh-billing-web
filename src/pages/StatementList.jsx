@@ -1,8 +1,21 @@
 import { useState, useEffect } from 'react'
 import { getStatements } from '../api/statementApi'
 import { Link } from 'react-router-dom'
+import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table'
+import { useNavigate } from 'react-router-dom'
 import logger from '../utils/logger'
 import './StatementList.css'
+
+const columns = [
+    { accessorKey: 'controlNumber', header: 'Control #' },
+    { accessorKey: 'servicesForName', header: 'Name' },
+    { accessorKey: 'serviceDate', header: 'Service Date' },
+    {
+        accessorFn: row => new Date(row.savedAt).toLocaleString(),
+        id: 'savedAt',
+        header: 'Saved'
+    },
+]
 
 function StatementList() {
     const [statements, setStatements] = useState([])
@@ -11,6 +24,9 @@ function StatementList() {
     const [search, setSearch] = useState('')
     const [fromDate, setFromDate] = useState('')
     const [toDate, setToDate] = useState('')
+    const [sorting, setSorting] = useState([])
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         logger.debug('Fetching statements...')
@@ -27,8 +43,6 @@ function StatementList() {
             })
     }, [])
 
-    if (loading) return <div>Loading...</div>
-    if (error) return <div>{error}</div>
 
     const filtered = statements.filter(s => {
         const matchesSearch = search === '' ||
@@ -38,6 +52,18 @@ function StatementList() {
         const matchesTo = toDate === '' || s.serviceDate <= toDate
         return matchesSearch && matchesFrom && matchesTo
     })
+
+    const tableInstance = useReactTable({
+        columns,
+        data: filtered,
+        state: { sorting },
+        onSortingChange: setSorting,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel()
+    })
+
+    if (loading) return <div>Loading...</div>
+    if (error) return <div>{error}</div>
 
     return (
         <div className="page statement-list">
@@ -65,17 +91,42 @@ function StatementList() {
                     <p>No results</p>
                 </div>
             ) : (
-                <ul>
-                    {filtered.map(statement => (
-                        <li key={statement.id}>
-                            <Link to={`/statements/${statement.id}`}>
-                                <span className="statement-number">#{statement.controlNumber} {statement.servicesForName}</span>
-                                <span className="statement-service-date"> Service: {statement.serviceDate}</span>
-                                <span className="statement-saved-date"> Saved: {new Date(statement.savedAt).toLocaleString()}</span>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                <table className='statement-table'>
+                    <thead>
+                        {tableInstance.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <th key={header.id} onClick={header.column.getToggleSortingHandler()} style={{ cursor: 'pointer' }}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                        {header.column.getIsSorted() === 'asc' ? ' ↑' : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {tableInstance.getRowModel().rows.map(row => (
+                            <tr key={row.id} onClick={() => navigate(`/statements/${row.original.id}`)} style={{ cursor: 'pointer' }}>
+                                {row.getVisibleCells().map(cell => (
+                                    <td key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                // <ul>
+                //     {filtered.map(statement => (
+                //         <li key={statement.id}>
+                //             <Link to={`/statements/${statement.id}`}>
+                //                 <span className="statement-number">#{statement.controlNumber} {statement.servicesForName}</span>
+                //                 <span className="statement-service-date"> Service: {statement.serviceDate}</span>
+                //                 <span className="statement-saved-date"> Saved: {new Date(statement.savedAt).toLocaleString()}</span>
+                //             </Link>
+                //         </li>
+                //     ))}
+                // </ul>
             )}
         </div>
     )
