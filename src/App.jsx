@@ -44,8 +44,8 @@ function AppContent() {
           borderRadius: '6px',
         },
         duration: 4000,
-        success: { iconTheme: { primary: '#2d6a35', secondary: '#fff' } },
-        error: { iconTheme: { primary: '#a0522d', secondary: '#fff' } }
+        success: { iconTheme: { primary: '#1B3A6B', secondary: '#fff' } },
+        error: { iconTheme: { primary: '#C0392B', secondary: '#fff' } }
       }} />
       <main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
