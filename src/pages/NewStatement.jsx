@@ -310,6 +310,10 @@ function NewStatement() {
         logger.debug('Validating statement form with selected merchandise, special charges, and cash advances')
         const errors = {}
 
+        if (embalmingSelected && !reasonForEmbalming.trim()) {
+            errors.reasonForEmbalming = true
+        }
+
         Object.entries(selectedMerchandise).forEach(([id, item]) => {
             const catalogItem = catalog.merchandise.find(m => m.id === parseInt(id))
             logger.debug('Validating merchandise item', id)
@@ -351,6 +355,8 @@ function NewStatement() {
         logger.debug('Validation completed with errors:', errors)
         return errors
     }
+
+    const embalmingSelected = Object.values(selectedServices).some(s => s.name === 'Embalming')
 
     if (loading) {
         return <div className="page">Loading...</div>
@@ -396,9 +402,22 @@ function NewStatement() {
                                 <select id="packageId" value={packageId || ''} onChange={handlePackageChange}>
                                     <option value="">None</option>
                                     {catalog.packages.map(pkg => (
-                                        <option key={pkg.id} value={pkg.id}>{pkg.name} — ${pkg.defaultCost}</option>
+                                        <option key={pkg.id} value={pkg.id}>{pkg.name} — {displayPrice(pkg.defaultCost)}</option>
                                     ))}
                                 </select>
+                            </div>
+                        )}
+
+                        {embalmingSelected && (
+                            <div className="form-field">
+                                <label htmlFor="reasonForEmbalming">Reason for Embalming</label>
+                                <input
+                                    id="reasonForEmbalming"
+                                    type="text"
+                                    value={reasonForEmbalming}
+                                    onChange={e => setReasonForEmbalming(e.target.value)}
+                                />
+                                {errors.reasonForEmbalming && <div className="error">Reason for embalming is required</div>}
                             </div>
                         )}
 
@@ -414,7 +433,7 @@ function NewStatement() {
                                     {service.name}
                                 </label>
                                 {!selectedServices[service.id] && service.defaultCost && (
-                                    <span className="catalog-item-price">${displayPrice(service.defaultCost)}</span>
+                                    <span className="catalog-item-price">{displayPrice(service.defaultCost)}</span>
                                 )}
                                 {selectedServices[service.id] && (
                                     <div className="catalog-item-inputs">
@@ -430,11 +449,11 @@ function NewStatement() {
                                         )}
                                         {errors[`service_desc_${service.id}`] && <div className="error">Description required</div>}
                                         {service.defaultCost ? (
-                                            <span className="catalog-item-price">${displayPrice(service.defaultCost)}</span>
+                                            <span className="catalog-item-price">{displayPrice(service.defaultCost)}</span>
                                         ) : (
                                             <PriceInput
                                                 aria-label={`Price for ${service.name}`}
-                                                placeholder="0.00"
+                                                placeholder="$0.00"
                                                 value={selectedServices[service.id].price}
                                                 onValueChange={e => updateServicePrice(service.id, e)}
                                             />
@@ -463,7 +482,7 @@ function NewStatement() {
 
                                 {!selectedMerchandise[item.id] && item.defaultCost && (
                                     <span className="catalog-item-price">
-                                        ${item.defaultCost}{item.pricingMode === 'PER_UNIT' ? ' each' : ''}
+                                        {displayPrice(item.defaultCost)}{item.pricingMode === 'PER_UNIT' ? ' each' : ''}
                                     </span>
                                 )}
                                 {selectedMerchandise[item.id] && (
@@ -500,7 +519,7 @@ function NewStatement() {
                                                 ) : (
                                                     <PriceInput
                                                         aria-label={`Price for ${item.name}`}
-                                                        placeholder="0.00"
+                                                        placeholder="$0.00"
                                                         value={selectedMerchandise[item.id].price}
                                                         onValueChange={e => updateMerchandisePrice(item.id, e)}
                                                     />
@@ -550,7 +569,7 @@ function NewStatement() {
                                         ) : (
                                             <PriceInput
                                                 aria-label={`Price for ${item.name}`}
-                                                placeholder="Price"
+                                                placeholder="$0.00"
                                                 value={selectedSpecialCharges[item.id].price}
                                                 onValueChange={e => updateSpecialChargePrice(item.id, e)}
                                             />
@@ -589,9 +608,9 @@ function NewStatement() {
                                         {errors[`cashAdvance_provider_${item.id}`] && <div className="error">Provider required</div>}
                                         <PriceInput
                                             aria-label={`Amount for ${item.name}`}
-                                            placeholder="Amount"
+                                            placeholder="$0.00"
                                             value={selectedCashAdvances[item.id].amount}
-                                            onChange={e => updateCashAdvanceAmount(item.id, e.target.value)}
+                                            onValueChange={e => updateCashAdvanceAmount(item.id, e)}
                                         />
                                         {errors[`cashAdvance_${item.id}`] && <div className="error">Amount required</div>}
                                     </div>
