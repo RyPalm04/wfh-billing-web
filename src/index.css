@@ -106,12 +106,3 @@ body {
   display: inline-flex;
   align-items: center;
 }
-
-.input-price-prefix {
-  position: absolute;
-  left: 8px;
-  color: var(--rose);
-  font-size: 13px;
-  font-weight: bold;
-  pointer-events: none;
-}
