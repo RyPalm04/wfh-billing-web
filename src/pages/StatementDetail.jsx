@@ -278,13 +278,13 @@ function StatementDetail() {
                 </div>
                 <div className="detail-actions">
                     <button disabled={editingPayment} className="btn btn-secondary" onClick={() => setEditingPayment(true)}>
-                        {'Edit Down Payment (E)'}
+                        Edit Down Payment <span className="kbd-hint">(E)</span>
                     </button>
                     <button className="btn btn-primary" onClick={handleDownloadPdf}>
-                        Download PDF (D)
+                        Download PDF <span className="kbd-hint">(D)</span>
                     </button>
                     <button className="btn btn-secondary" onClick={() => navigate(`/statements/${id}/edit`)}>
-                        Edit (Shift+E)
+                        Edit <span className="kbd-hint">(Shift+E)</span>
                     </button>
                 </div>
             </div>

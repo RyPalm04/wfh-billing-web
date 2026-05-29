@@ -10,7 +10,9 @@ function Nav() {
         <nav className="nav">
             <Link to="/" className="nav-brand">
                 <img src={logo} alt="Funeral Home Statement Manager" />
-                Funeral Home Statement Manager
+                <span className="nav-brand-text">
+                    Funeral Home Statement Manager
+                </span>
             </Link>
             <button
                 className={`nav-hamburger ${menuOpen ? 'nav-hamburger--open' : ''}`}
