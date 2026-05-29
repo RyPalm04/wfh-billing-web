@@ -456,7 +456,7 @@ function EditStatement() {
                                         ) : (
                                             <PriceInput
                                                 aria-label={`Price for ${service.name}`}
-                                                placeholder="0.00"
+                                                placeholder="$0.00"
                                                 value={selectedServices[service.id].price}
                                                 onValueChange={e => updateServicePrice(service.id, e)}
                                             />
@@ -521,7 +521,7 @@ function EditStatement() {
                                                 ) : (
                                                     <PriceInput
                                                         aria-label={`Price for ${item.name}`}
-                                                        placeholder="0.00"
+                                                        placeholder="$0.00"
                                                         value={selectedMerchandise[item.id].price}
                                                         onValueChange={e => updateMerchandisePrice(item.id, e)}
                                                     />
@@ -569,7 +569,7 @@ function EditStatement() {
                                         ) : (
                                             <PriceInput
                                                 aria-label={`Price for ${item.name}`}
-                                                placeholder="Price"
+                                                placeholder="$0.00"
                                                 value={selectedSpecialCharges[item.id].price}
                                                 onValueChange={e => updateSpecialChargePrice(item.id, e)}
                                             />
@@ -606,7 +606,7 @@ function EditStatement() {
                                         />
                                         <PriceInput
                                             aria-label={`Amount for ${item.name}`}
-                                            placeholder="Amount"
+                                            placeholder="$0.00"
                                             value={selectedCashAdvances[item.id].amount}
                                             onValueChange={e => updateCashAdvanceAmount(item.id, e)}
                                         />

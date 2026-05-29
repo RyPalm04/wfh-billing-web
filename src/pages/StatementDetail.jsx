@@ -247,7 +247,7 @@ function StatementDetail() {
                                 <PriceInput
                                     value={downPayment}
                                     onValueChange={e => setDownPayment(e)}
-                                    placeholder="0.00"
+                                    placeholder="$0.00"
                                     onKeyDown={e => {
                                         if (e.key === 'Enter') {
                                             logger.debug('Saving down payment for statement', id, 'value:', downPayment)
@@ -267,7 +267,7 @@ function StatementDetail() {
                             </div>
                         ) : (
                             <div className="detail-payment-display">
-                                <span className="detail-value">{downPayment ? `${displayPrice(downPayment)}` : '—'}</span>
+                                <span className="detail-value">{downPayment ? displayPrice(downPayment) : '—'}</span>
                             </div>
                         )}
                     </div>

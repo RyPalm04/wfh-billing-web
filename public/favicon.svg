@@ -1,13 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="512" height="512">
-  <defs>
-    <style>
-      @font-face {
-        font-family: 'Playfair Display';
-        src: url('../fonts/PlayfairDisplay-Bold.ttf') format('truetype');
-        font-weight: 700;
-      }
-    </style>
-  </defs>
   <!-- Hexagon fill -->
   <polygon points="24,2 42,12 42,36 24,46 6,36 6,12" fill="#1B3A6B"/>
   <!-- Outer gold border -->
