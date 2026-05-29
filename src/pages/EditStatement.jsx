@@ -27,19 +27,28 @@ function EditStatement() {
     const [submitting, setSubmitting] = useState(false)
     const [packageId, setPackageId] = useState(null)
     const [errors, setErrors] = useState({})
+    const [reasonForEmbalming, setReasonForEmbalming] = useState('')
 
     function handleSubmit(e) {
         logger.debug('Submitting updated statement with servicesForName:', servicesForName, 'serviceDate:', serviceDate, 'dateOfDeath:', dateOfDeath, 'placeOfDeath:', placeOfDeath, 'selectedServices:', selectedServices, 'selectedMerchandise:', selectedMerchandise, 'selectedSpecialCharges:', selectedSpecialCharges, 'selectedCashAdvances:', selectedCashAdvances, 'packageId:', packageId)
         e.preventDefault()
         setSubmitting(true)
 
+        const validationErrors = validate()
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors)
+            setSubmitting(false)
+            return
+        }
+        setErrors({})
+
         const selectedPkg = packageId ? catalog.packages.find(p => p.id === packageId) : null
 
         updateStatement(id, {
             controlNumber: statement.controlNumber,
-            reasonForEmbalming: statement.reasonForEmbalming,
             salesTaxRate: statement.salesTaxRate,
             payment: statement.payment,
+            reasonForEmbalming,
             servicesForName,
             serviceDate,
             dateOfDeath,
@@ -229,6 +238,45 @@ function EditStatement() {
         }
     }
 
+    function validate() {
+        const errors = {}
+
+        if (embalmingSelected && !reasonForEmbalming.trim()) {
+            errors.reasonForEmbalming = true
+        }
+
+        Object.entries(selectedMerchandise).forEach(([id, item]) => {
+            const catalogItem = catalog.merchandise.find(m => m.id === parseInt(id))
+            if (!catalogItem.defaultCost && !parseFloat(item.price)) {
+                errors[`merchandise_${id}`] = true
+            }
+            if (catalogItem.requiresDescription && catalogItem.pricingMode !== 'PER_UNIT' && !item.description?.trim()) {
+                errors[`merchandise_desc_${id}`] = true
+            }
+        })
+
+        Object.entries(selectedSpecialCharges).forEach(([id, item]) => {
+            const catalogItem = catalog.specialCharges.find(sc => sc.id === parseInt(id))
+            if (!catalogItem.defaultCost && !parseFloat(item.price)) {
+                errors[`specialCharge_${id}`] = true
+            }
+            if (catalogItem.requiresDescription && !item.description?.trim()) {
+                errors[`specialCharge_desc_${id}`] = true
+            }
+        })
+
+        Object.entries(selectedCashAdvances).forEach(([id, item]) => {
+            if (!parseFloat(item.amount)) {
+                errors[`cashAdvance_${id}`] = true
+            }
+            if (!item.provider?.trim()) {
+                errors[`cashAdvance_provider_${id}`] = true
+            }
+        })
+
+        return errors
+    }
+
     useEffect(() => {
         logger.debug('Loading statement and catalog data for statement id:', id)
         Promise.all([getStatement(id), getCatalog()])
@@ -288,6 +336,7 @@ function EditStatement() {
                 setServiceDate(statementRes.data.serviceDate ?? '')
                 setDateOfDeath(statementRes.data.dateOfDeath ?? '')
                 setPlaceOfDeath(statementRes.data.placeOfDeath)
+                setReasonForEmbalming(statementRes.data.reasonForEmbalming ?? '')
                 let packages = catalogRes.data.packages
                 if (statementRes.data.servicePackage?.legacyPackage && statementRes.data.packageId) {
                     packages = [
@@ -310,6 +359,8 @@ function EditStatement() {
                 setLoading(false)
             })
     }, [id])
+
+    const embalmingSelected = Object.values(selectedServices).some(s => s.name === 'Embalming')
 
     if (loading) return <div>Loading...</div>
     if (error) return <div>{error}</div>
@@ -352,11 +403,24 @@ function EditStatement() {
                                         }
                                         return (
                                             <option key={pkg.id} value={pkg.id} disabled={pkg.legacyPackage}>
-                                                {pkg.name}{pkg.legacyPackage ? ' (Legacy)' : ''} — ${displayPrice(pkg.defaultCost)}
+                                                {pkg.name}{pkg.legacyPackage ? ' (Legacy)' : ''} — {displayPrice(pkg.defaultCost)}
                                             </option>
                                         )
                                     })}
                                 </select>
+                            </div>
+                        )}
+
+                        {embalmingSelected && (
+                            <div className="form-field">
+                                <label htmlFor="reasonForEmbalming">Reason for Embalming</label>
+                                <input
+                                    id="reasonForEmbalming"
+                                    type="text"
+                                    value={reasonForEmbalming}
+                                    onChange={e => setReasonForEmbalming(e.target.value)}
+                                />
+                                {errors.reasonForEmbalming && <div className="error">Reason for embalming is required</div>}
                             </div>
                         )}
 
@@ -372,7 +436,7 @@ function EditStatement() {
                                     {service.name}
                                 </label>
                                 {!selectedServices[service.id] && service.defaultCost && (
-                                    <span className="catalog-item-price">${displayPrice(service.defaultCost)}</span>
+                                    <span className="catalog-item-price">{displayPrice(service.defaultCost)}</span>
                                 )}
                                 {selectedServices[service.id] && (
                                     <div className="catalog-item-inputs">
@@ -388,7 +452,7 @@ function EditStatement() {
                                         )}
                                         {errors[`service_desc_${service.id}`] && <div className="error">Description required</div>}
                                         {service.defaultCost ? (
-                                            <span className="catalog-item-price">${displayPrice(service.defaultCost)}</span>
+                                            <span className="catalog-item-price">{displayPrice(service.defaultCost)}</span>
                                         ) : (
                                             <PriceInput
                                                 aria-label={`Price for ${service.name}`}
@@ -421,7 +485,7 @@ function EditStatement() {
 
                                 {!selectedMerchandise[item.id] && item.defaultCost && (
                                     <span className="catalog-item-price">
-                                        ${item.defaultCost}{item.pricingMode === 'PER_UNIT' ? ' each' : ''}
+                                        {displayPrice(item.defaultCost)}{item.pricingMode === 'PER_UNIT' ? ' each' : ''}
                                     </span>
                                 )}
                                 {selectedMerchandise[item.id] && (
@@ -453,7 +517,7 @@ function EditStatement() {
                                                     />
                                                 )}
                                                 {item.defaultCost ? (
-                                                    <span className="catalog-item-price">${displayPrice(item.defaultCost)}</span>
+                                                    <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                                 ) : (
                                                     <PriceInput
                                                         aria-label={`Price for ${item.name}`}
@@ -485,7 +549,7 @@ function EditStatement() {
                                     {item.name}
                                 </label>
                                 {!selectedSpecialCharges[item.id] && item.defaultCost && (
-                                    <span className="catalog-item-price">${displayPrice(item.defaultCost)}</span>
+                                    <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                 )}
                                 {selectedSpecialCharges[item.id] && (
                                     <div className="catalog-item-inputs">
@@ -501,7 +565,7 @@ function EditStatement() {
                                             />
                                         )}
                                         {item.defaultCost ? (
-                                            <span className="catalog-item-price">${displayPrice(item.defaultCost)}</span>
+                                            <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                         ) : (
                                             <PriceInput
                                                 aria-label={`Price for ${item.name}`}
