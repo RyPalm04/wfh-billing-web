@@ -10,6 +10,7 @@ function FeedbackModal({ open, onClose }) {
     const [visible, setVisible] = useState(open)
     const [closing, setClosing] = useState(false)
     const formRef = useRef(null)
+    const textareaRef = useRef(null)
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -26,8 +27,7 @@ function FeedbackModal({ open, onClose }) {
                 page: window.location.href,
                 userAgent: navigator.userAgent,
                 screenSize: `${window.innerWidth}x${window.innerHeight}`,
-                referrer: document.referrer || 'direct',
-                activeElement: document.activeElement?.id || document.activeElement?.tagName || 'unknown'
+                referrer: document.referrer || 'direct'
             }
         })
             .then(() => {
@@ -44,6 +44,7 @@ function FeedbackModal({ open, onClose }) {
         if (open) {
             setVisible(true)
             setClosing(false)
+            setTimeout(() => textareaRef.current?.focus(), 50)
         } else if (visible) {
             setClosing(true)
         }
@@ -53,7 +54,7 @@ function FeedbackModal({ open, onClose }) {
         if (!visible) {
             return
         }
-        
+
         function handleKeyDown(e) {
             if (e.code === 'Escape') {
                 onClose()
@@ -95,7 +96,7 @@ function FeedbackModal({ open, onClose }) {
                 </div>
                 <div className="form-field">
                     <label htmlFor="feedbackDescription">Description</label>
-                    <textarea id="feedbackDescription" value={description} onChange={e => setDescription(e.target.value)} rows={4} placeholder="Describe the issue or idea..." required />
+                    <textarea ref={textareaRef} id="feedbackDescription" value={description} onChange={e => setDescription(e.target.value)} rows={4} placeholder="Describe the issue or idea..." required />
                 </div>
                 <div className="feedback-panel-actions">
                     <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
