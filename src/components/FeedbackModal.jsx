@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { submitFeedback } from '../api/feedbackApi'
 import toast from 'react-hot-toast'
 import './FeedbackModal.css'
@@ -9,25 +9,7 @@ function FeedbackModal({ open, onClose }) {
     const [submitting, setSubmitting] = useState(false)
     const [visible, setVisible] = useState(open)
     const [closing, setClosing] = useState(false)
-
-    useEffect(() => {
-        if (open) {
-            setVisible(true)
-            setClosing(false)
-        } else if (visible) {
-            setClosing(true)
-        }
-    }, [open])
-
-    function handleAnimationEnd() {
-        if (closing) {
-            setVisible(false)
-        }
-    }
-
-    if (!visible) {
-        return null
-    }
+    const formRef = useRef(null)
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -58,10 +40,51 @@ function FeedbackModal({ open, onClose }) {
             })
     }
 
+    useEffect(() => {
+        if (open) {
+            setVisible(true)
+            setClosing(false)
+        } else if (visible) {
+            setClosing(true)
+        }
+    }, [open])
+
+    useEffect(() => {
+        if (!visible) {
+            return
+        }
+        
+        function handleKeyDown(e) {
+            if (e.code === 'Escape') {
+                onClose()
+            }
+
+            if ((e.metaKey || e.ctrlKey) && e.code === 'Enter') {
+                formRef.current?.requestSubmit()
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyDown)
+        return () => document.removeEventListener('keydown', handleKeyDown)
+    }, [visible, onClose])
+
+    function handleAnimationEnd() {
+        if (closing) {
+            setVisible(false)
+            setDescription('')
+            setType('Bug')
+            setSubmitting(false)
+        }
+    }
+
+    if (!visible) {
+        return null
+    }
+
     return (
         <div className={`feedback-panel${closing ? ' feedback-panel--closing' : ''}`} onAnimationEnd={handleAnimationEnd}>
             <h2 className="feedback-panel-title">Submit Feedback</h2>
-            <form onSubmit={handleSubmit}>
+            <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="form-field">
                     <label htmlFor="feedbackType">Type</label>
                     <select id="feedbackType" value={type} onChange={e => setType(e.target.value)}>

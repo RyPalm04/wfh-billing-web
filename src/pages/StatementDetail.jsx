@@ -22,13 +22,13 @@ function StatementDetail() {
             return
         }
 
-        if (event.key === 'e' && !editingPayment) {
+        if (event.code === 'KeyE' && !event.shiftKey && !editingPayment) {
             logger.debug('E key pressed - entering down payment edit mode for statement', id)
             setEditingPayment(true)
-        } else if (event.key === 'd' && !editingPayment) {
+        } else if (event.code === 'KeyD' && !editingPayment) {
             logger.debug('Shift+D key pressed - downloading PDF for statement', id)
             handleDownloadPdf()
-        } else if (event.key === 'E' && event.shiftKey) {
+        } else if (event.code === 'KeyE' && event.shiftKey) {
             logger.debug('Shift+E keys pressed - navigating to edit page for statement', id)
             navigate(`/statements/${id}/edit`)
         }
