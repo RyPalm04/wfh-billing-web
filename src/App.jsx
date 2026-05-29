@@ -23,12 +23,15 @@ function AppContent() {
         return
       }
 
-      if (e.key === 's' && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+      if (e.code === 'KeyS' && !e.shiftKey && !e.altKey && !e.ctrlKey) {
         logger.debug('S key pressed - navigating to statement list')
         navigate('/statements')
-      } else if (e.key === 'n' && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+      } else if (e.code === 'KeyN' && !e.shiftKey && !e.altKey && !e.ctrlKey) {
         logger.debug('N key pressed - navigating to new statement page')
         navigate('/statements/new')
+      } else if (e.code === 'KeyF' && !e.shiftKey && e.altKey && !e.ctrlKey) {
+        logger.debug('Alt+F key combo pressed - opening feedback modal')
+        setFeedbackOpen(true)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
