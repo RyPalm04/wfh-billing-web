@@ -127,3 +127,17 @@
     font-style: italic;
     color: var(--secondary);
   }
+
+  @media (max-width: 600px) {
+    .detail-actions {
+      flex-direction: column;
+    }
+
+    .detail-actions .btn {
+      width: 100%;
+    }
+
+    .kbd-hint {
+      display: none;
+    }
+  }

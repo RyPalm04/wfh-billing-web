@@ -30,6 +30,10 @@ function NewStatement() {
     const navigate = useNavigate()
 
     function startTour() {
+        if (window.innerWidth <= 600) {
+            return
+        }
+
         logger.debug('Starting new statement creation tour')
         const tour = new Shepherd.Tour({
             defaultStepOptions: {
@@ -486,7 +490,7 @@ function NewStatement() {
                                     </span>
                                 )}
                                 {selectedMerchandise[item.id] && (
-                                    <div className="catalog-item-inputs">
+                                    <div className={`catalog-item-inputs${item.requiresDescription ? ' catalog-item-inputs--wide' : ''}`}>
                                         {item.pricingMode === 'PER_UNIT' ? (
                                             <>
                                                 <input
@@ -551,7 +555,7 @@ function NewStatement() {
                                     <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                 )}
                                 {selectedSpecialCharges[item.id] && (
-                                    <div className="catalog-item-inputs">
+                                    <div className={`catalog-item-inputs${item.requiresDescription ? ' catalog-item-inputs--wide' : ''}`}>
                                         {item.requiresDescription && (
                                             <input
                                                 type="text"
