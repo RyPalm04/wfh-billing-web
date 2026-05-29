@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './components/ErrorFallback'
@@ -10,8 +10,11 @@ import Home from './pages/Home'
 import Nav from './components/Nav'
 import logger from './utils/logger'
 import { Toaster } from 'react-hot-toast'
+import FeedbackModal from './components/FeedbackModal'
+import './App.css'
 
 function AppContent() {
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -57,6 +60,8 @@ function AppContent() {
             <Route path="/statements/:id/edit" element={<EditStatement />} />
           </Routes>
         </ErrorBoundary>
+        <button className="feedback-fab" onClick={() => setFeedbackOpen(prev => !prev)}>Feedback</button>
+        <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
       </main>
     </>
   )
