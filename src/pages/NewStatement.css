@@ -109,6 +109,8 @@
       font-size: 13px;
       font-weight: bold;
       color: var(--rose);
+      min-width: 80px;
+      text-align: right;
   }
 
   .form-field select {
@@ -161,6 +163,10 @@
       color: var(--rose);
       width: 80px;
       text-align: right;
+  }
+
+  .catalog-item-inputs {
+      justify-content: space-between;
   }
 
   .catalog-input-price:focus {

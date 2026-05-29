@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCatalog } from '../api/catalogApi'
 import { createStatement, getNextControlNumber } from '../api/statementApi'
-import { sanitizePrice, formatPrice } from '../utils/price'
+import { displayPrice } from '../utils/price'
 import Shepherd from 'shepherd.js'
 import toast from 'react-hot-toast'
 import logger from '../utils/logger'
 import 'shepherd.js/dist/css/shepherd.css'
 import './NewStatement.css'
+import PriceInput from '../components/PriceInput'
 
 function NewStatement() {
     const [catalog, setCatalog] = useState(null)
@@ -413,7 +414,7 @@ function NewStatement() {
                                     {service.name}
                                 </label>
                                 {!selectedServices[service.id] && service.defaultCost && (
-                                    <span className="catalog-item-price">${service.defaultCost}</span>
+                                    <span className="catalog-item-price">${displayPrice(service.defaultCost)}</span>
                                 )}
                                 {selectedServices[service.id] && (
                                     <div className="catalog-item-inputs">
@@ -429,16 +430,13 @@ function NewStatement() {
                                         )}
                                         {errors[`service_desc_${service.id}`] && <div className="error">Description required</div>}
                                         {service.defaultCost ? (
-                                            <span className="catalog-item-price">${service.defaultCost}</span>
+                                            <span className="catalog-item-price">${displayPrice(service.defaultCost)}</span>
                                         ) : (
-                                            <input
-                                                type="text"
+                                            <PriceInput
                                                 aria-label={`Price for ${service.name}`}
                                                 placeholder="0.00"
-                                                className="catalog-input-price"
                                                 value={selectedServices[service.id].price}
-                                                onChange={e => updateServicePrice(service.id, sanitizePrice(e.target.value))}
-                                                onBlur={e => updateServicePrice(service.id, formatPrice(e.target.value))}
+                                                onValueChange={e => updateServicePrice(service.id, e)}
                                             />
                                         )}
                                         {errors[`service_${service.id}`] && <div className="error">Price required</div>}
@@ -498,16 +496,13 @@ function NewStatement() {
                                                 )}
                                                 {errors[`merchandise_desc_${item.id}`] && <div className="error">Description required</div>}
                                                 {item.defaultCost ? (
-                                                    <span className="catalog-item-price">${item.defaultCost}</span>
+                                                    <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                                 ) : (
-                                                    <input
-                                                        type="text"
+                                                    <PriceInput
                                                         aria-label={`Price for ${item.name}`}
-                                                        className="catalog-input-price"
                                                         placeholder="0.00"
                                                         value={selectedMerchandise[item.id].price}
-                                                        onChange={e => updateMerchandisePrice(item.id, sanitizePrice(e.target.value))}
-                                                        onBlur={e => updateMerchandisePrice(item.id, formatPrice(e.target.value))}
+                                                        onValueChange={e => updateMerchandisePrice(item.id, e)}
                                                     />
                                                 )}
                                                 {errors[`merchandise_${item.id}`] && <div className="error">Price required</div>}
@@ -534,7 +529,7 @@ function NewStatement() {
                                     {item.name}
                                 </label>
                                 {!selectedSpecialCharges[item.id] && item.defaultCost && (
-                                    <span className="catalog-item-price">${item.defaultCost}</span>
+                                    <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                 )}
                                 {selectedSpecialCharges[item.id] && (
                                     <div className="catalog-item-inputs">
@@ -545,22 +540,19 @@ function NewStatement() {
                                                 placeholder="Description"
                                                 className="catalog-input-text"
                                                 value={selectedSpecialCharges[item.id].description}
-                                                onChange={e => updateSpecialChargeDescription(item.id, sanitizePrice(e.target.value))}
-                                                onBlur={e => updateSpecialChargeDescription(item.id, formatPrice(e.target.value))}
+                                                onChange={e => updateSpecialChargeDescription(item.id, e.target.value)}
+                                                onBlur={e => updateSpecialChargeDescription(item.id, e.target.value)}
                                             />
                                         )}
                                         {errors[`specialCharge_desc_${item.id}`] && <div className="error">Description required</div>}
                                         {item.defaultCost ? (
-                                            <span className="catalog-item-price">${item.defaultCost}</span>
+                                            <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                         ) : (
-                                            <input
-                                                type="text"
+                                            <PriceInput
                                                 aria-label={`Price for ${item.name}`}
                                                 placeholder="Price"
-                                                className="catalog-input-price"
                                                 value={selectedSpecialCharges[item.id].price}
-                                                onChange={e => updateSpecialChargePrice(item.id, sanitizePrice(e.target.value))}
-                                                onBlur={e => updateSpecialChargePrice(item.id, formatPrice(e.target.value))}
+                                                onValueChange={e => updateSpecialChargePrice(item.id, e)}
                                             />
                                         )}
                                         {errors[`specialCharge_${item.id}`] && <div className="error">Price required</div>}
@@ -595,14 +587,11 @@ function NewStatement() {
                                             onChange={e => updateCashAdvanceProvider(item.id, e.target.value)}
                                         />
                                         {errors[`cashAdvance_provider_${item.id}`] && <div className="error">Provider required</div>}
-                                        <input
-                                            type="text"
+                                        <PriceInput
                                             aria-label={`Amount for ${item.name}`}
                                             placeholder="Amount"
-                                            className="catalog-input-price"
                                             value={selectedCashAdvances[item.id].amount}
-                                            onChange={e => sanitizePrice(updateCashAdvanceAmount(item.id, e.target.value))}
-                                            onBlur={e => formatPrice(updateCashAdvanceAmount(item.id, e.target.value))}
+                                            onChange={e => updateCashAdvanceAmount(item.id, e.target.value)}
                                         />
                                         {errors[`cashAdvance_${item.id}`] && <div className="error">Amount required</div>}
                                     </div>

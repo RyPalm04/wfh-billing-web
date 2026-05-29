@@ -1,7 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-    <path d="M6 2 L32 2 L42 12 L42 46 L6 46 Z" fill="#1B3A6B"/>
-    <path d="M32 2 L42 12 L32 12 Z" fill="#C9A84C"/>
-    <rect x="11" y="21" width="22" height="2.5" rx="1.25" fill="rgba(255,255,255,0.85)"/>
-    <rect x="11" y="27" width="22" height="2.5" rx="1.25" fill="rgba(255,255,255,0.85)"/>
-    <rect x="11" y="33" width="14" height="2.5" rx="1.25" fill="rgba(255,255,255,0.85)"/>
-  </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="512" height="512">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'Playfair Display';
+        src: url('../fonts/PlayfairDisplay-Bold.ttf') format('truetype');
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <!-- Hexagon fill -->
+  <polygon points="24,2 42,12 42,36 24,46 6,36 6,12" fill="#1B3A6B"/>
+  <!-- Outer gold border -->
+  <polygon points="24,2 42,12 42,36 24,46 6,36 6,12"
+           fill="none" stroke="#C9A84C" stroke-width="1.8"/>
+  <!-- Inner gold ring (subtle depth) -->
+  <polygon points="24,6 39,14 39,34 24,42 9,34 9,14"
+           fill="none" stroke="#C9A84C" stroke-width="0.6" opacity="0.55"/>
+  <!-- SM monogram -->
+  <text font-family="'Playfair Display', Georgia, serif"
+        font-weight="700" font-size="17" fill="#C9A84C">
+    <tspan x="17.5" y="30" text-anchor="middle">S</tspan>
+    <tspan x="30" y="30" text-anchor="middle">M</tspan>
+  </text>
+</svg>
