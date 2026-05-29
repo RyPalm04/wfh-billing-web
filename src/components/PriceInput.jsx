@@ -1,7 +1,7 @@
 import { displayPrice, sanitizePrice, formatPrice } from "../utils/price";
 import { useState } from 'react'
 
-function PriceInput({ value, onValueChange, onKeyDown, ariaLabel, placeholder = '$0.00' }) {
+function PriceInput({ value, onValueChange, onKeyDown, 'aria-label': ariaLabel, placeholder = '$0.00' }) {
     const [focused, setFocused] = useState(false)
 
     return (

@@ -120,7 +120,7 @@ describe('StatementDetail', () => {
         )
         await waitFor(() => screen.getByText('Test Person'))
         fireEvent.keyDown(document, { key: 'e', code: 'KeyE' })
-        expect(screen.getByPlaceholderText('0.00')).toBeInTheDocument()
+        expect(screen.getByPlaceholderText('$0.00')).toBeInTheDocument()
     })
 
     it('makes sure E does nothing when already editing', async () => {
@@ -134,10 +134,10 @@ describe('StatementDetail', () => {
         )
         await waitFor(() => screen.getByText('Test Person'))
         fireEvent.keyDown(document, { key: 'e', code: 'KeyE' })
-        expect(screen.getByPlaceholderText('0.00')).toBeInTheDocument()
+        expect(screen.getByPlaceholderText('$0.00')).toBeInTheDocument()
         fireEvent.keyDown(document, { key: 'e', code: 'KeyE' })
         // Still only one input should be visible
-        expect(screen.getAllByPlaceholderText('0.00').length).toBe(1)
+        expect(screen.getAllByPlaceholderText('$0.00').length).toBe(1)
     })
 
     it('handles Enter key press and saves down payment', async () => {
@@ -152,7 +152,7 @@ describe('StatementDetail', () => {
         )
         await waitFor(() => screen.getByText('Test Person'))
         fireEvent.keyDown(document, { key: 'e', code: 'KeyE' })
-        const input = screen.getByPlaceholderText('0.00')
+        const input = screen.getByPlaceholderText('$0.00')
         fireEvent.change(input, { target: { value: '500' } })
         fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
         await waitFor(() => {
@@ -178,7 +178,7 @@ describe('StatementDetail', () => {
         )
         await waitFor(() => screen.getByText('Test Person'))
         fireEvent.keyDown(document, { key: 'e', code: 'KeyE' })
-        const input = screen.getByPlaceholderText('0.00')
+        const input = screen.getByPlaceholderText('$0.00')
         fireEvent.change(input, { target: { value: '500' } })
         fireEvent.keyDown(input, { key: 'Escape', code: 'Escape' })
         // Input should be gone and previous value should be shown

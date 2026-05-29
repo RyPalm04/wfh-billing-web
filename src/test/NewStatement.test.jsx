@@ -54,7 +54,7 @@ describe('NewStatement', () => {
     beforeEach(() => {
         vi.clearAllMocks()
         localStorage.clear()
-        Shepherd.Tour.mockImplementation(function() { return { addSteps: vi.fn(), start: vi.fn() } })
+        Shepherd.Tour.mockImplementation(function () { return { addSteps: vi.fn(), start: vi.fn() } })
     })
 
     it('shows loading state initially', () => {
@@ -223,6 +223,7 @@ describe('NewStatement', () => {
         fireEvent.click(screen.getByLabelText('Embalming'))
         fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
         fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
+        fireEvent.change(screen.getByLabelText('Reason for Embalming'), { target: { value: 'Family request' } })
         fireEvent.click(screen.getByText('Create Statement'))
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
@@ -328,11 +329,12 @@ describe('NewStatement', () => {
         fireEvent.change(screen.getByLabelText('Package'), { target: { value: '1' } })
         fireEvent.change(screen.getByLabelText('Services For Name'), { target: { value: 'Test Person' } })
         fireEvent.change(screen.getByLabelText('Service Date'), { target: { value: '2024-01-18' } })
+        fireEvent.change(screen.getByLabelText('Reason for Embalming'), { target: { value: 'Family request' } })
         fireEvent.click(screen.getByText('Create Statement'))
         await waitFor(() => {
             expect(statementApi.createStatement).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    servicePackage: expect.objectContaining({ id: 1}),
+                    servicePackage: expect.objectContaining({ id: 1 }),
                     services: [expect.objectContaining({ serviceId: 1, inPackage: true })]
                 })
             )
@@ -357,7 +359,7 @@ describe('NewStatement', () => {
         fireEvent.click(screen.getByLabelText('Flower Arrangement'))
         fireEvent.change(screen.getByLabelText('Price for Flower Arrangement'), { target: { value: '25' } })
         fireEvent.blur(screen.getByLabelText('Price for Flower Arrangement'))
-        expect(screen.getByLabelText('Price for Flower Arrangement')).toHaveValue('25.00')
+        expect(screen.getByLabelText('Price for Flower Arrangement')).toHaveValue('$25.00')
     })
 
     it('shows quantity input for per-unit merchandise', async () => {
@@ -473,7 +475,7 @@ describe('NewStatement', () => {
         statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
         const mockStart = vi.fn()
         const mockTour = { addSteps: vi.fn(), start: mockStart }
-        Shepherd.Tour.mockImplementation(function() { return mockTour })
+        Shepherd.Tour.mockImplementation(function () { return mockTour })
 
         render(<MemoryRouter><NewStatement /></MemoryRouter>)
 
@@ -487,7 +489,7 @@ describe('NewStatement', () => {
         statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
         const mockStart = vi.fn()
         const mockTour = { addSteps: vi.fn(), start: mockStart }
-        Shepherd.Tour.mockImplementation(function() { return mockTour })
+        Shepherd.Tour.mockImplementation(function () { return mockTour })
 
         localStorage.setItem('tourSeen', 'true')
 
@@ -504,7 +506,7 @@ describe('NewStatement', () => {
         statementApi.getNextControlNumber.mockResolvedValue({ data: mockControlNumber })
         const mockStart = vi.fn()
         const mockTour = { addSteps: vi.fn(), start: mockStart }
-        Shepherd.Tour.mockImplementation(function() { return mockTour })
+        Shepherd.Tour.mockImplementation(function () { return mockTour })
 
 
         render(<MemoryRouter><NewStatement /></MemoryRouter>)
@@ -530,7 +532,7 @@ describe('NewStatement', () => {
         localStorage.setItem('tourSeen', 'true')
         const mockStart = vi.fn()
         const mockTour = { addSteps: vi.fn(), start: mockStart }
-        Shepherd.Tour.mockImplementation(function() { return mockTour })
+        Shepherd.Tour.mockImplementation(function () { return mockTour })
 
         render(<MemoryRouter><NewStatement /></MemoryRouter>)
         await waitFor(() => expect(screen.getByText('Restart Tour')).toBeInTheDocument())
