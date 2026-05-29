@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getStatement, getStatementPdf, updateStatement } from '../api/statementApi'
-import { sanitizePrice, formatPrice } from '../utils/price'
+import { displayPrice } from '../utils/price'
 import toast from 'react-hot-toast'
 import logger from '../utils/logger'
 import './StatementDetail.css'
+import PriceInput from '../components/PriceInput'
 
 function StatementDetail() {
     const { id } = useParams()
@@ -139,26 +140,28 @@ function StatementDetail() {
                     <span className="detail-label">Services For</span>
                     <span className="detail-value">{statement.servicesForName}</span>
                 </div>
-                <div className="detail-row">
-                    <span className="detail-label">Service Date</span>
-                    <span className="detail-value">{statement.serviceDate}</span>
-                </div>
+                {statement.serviceDate && (
+                    <div className="detail-row">
+                        <span className="detail-label">Service Date</span>
+                        <span className="detail-value">{statement.serviceDate}</span>
+                    </div>
+                )}
                 <div className="detail-section">
                     <h3 className="detail-section-header">Services, Facilities, & Transportation</h3>
                     {statement.servicePackage && (
                         <>
-                        <div className="detail-row">
-                            <span className="detail-label">
-                                Package: {statement.servicePackage.name}{statement.servicePackage.legacyPackage ? ' (Legacy)' : ''}
-                            </span>
-                            <span className="detail-value">${statement.servicePackage.defaultCost}</span>
-                        </div>
-                        {statement.services.filter(s => s.inPackage).map(s => (
-                            <div key={s.serviceId} className="detail-row detail-row--package-service">
-                                <span className="detail-label">{s.name}</span>
-                                <span className="detail-value">Included</span>
+                            <div className="detail-row">
+                                <span className="detail-label">
+                                    Package: {statement.servicePackage.name}{statement.servicePackage.legacyPackage ? ' (Legacy)' : ''}
+                                </span>
+                                <span className="detail-value">${displayPrice(statement.servicePackage.defaultCost)}</span>
                             </div>
-                        ))}
+                            {statement.services.filter(s => s.inPackage).map(s => (
+                                <div key={s.serviceId} className="detail-row detail-row--package-service">
+                                    <span className="detail-label">{s.name}</span>
+                                    <span className="detail-value">Included</span>
+                                </div>
+                            ))}
                         </>
                     )}
                     {(() => {
@@ -167,31 +170,20 @@ function StatementDetail() {
                             return (
                                 <div className="detail-row">
                                     <span className="detail-label">None</span>
-                                    <span className="detail-value">0.00</span>
+                                    <span className="detail-value">$0.00</span>
                                 </div>
                             )
                         }
                         return nonPackageServices.map(s => (
                             <div key={s.serviceId} className="detail-row">
                                 <span className="detail-label">{s.name}</span>
-                                <span className="detail-value">${s.price}</span>
+                                <span className="detail-value">${displayPrice(s.price)}</span>
                             </div>
                         ))
                     })()}
-                    {/* {statement.services.length === 0 ? (
-                        <div className="detail-row">
-                            <span className="detail-label">None</span>
-                            <span className="detail-value">$0.00</span>
-                        </div>
-                    ) : statement.services.map(s => (
-                        <div key={s.serviceId} className="detail-row">
-                            <span className="detail-label">{s.name}</span>
-                            <span className="detail-value">${s.price}</span>
-                        </div>
-                    ))} */}
                     <div className="detail-row detail-section-total">
                         <span className="detail-label">Services Total</span>
-                        <span className="detail-value">${servicesTotal}</span>
+                        <span className="detail-value">${displayPrice(servicesTotal)}</span>
                     </div>
                 </div>
                 <div className="detail-section">
@@ -199,55 +191,52 @@ function StatementDetail() {
                     {statement.merchandise.map(m => (
                         <div key={m.merchandiseId} className="detail-row">
                             <span className="detail-label">{m.name}{m.description ? ` — ${m.description}` : ''}</span>
-                            <span className="detail-value">${m.price}</span>
+                            <span className="detail-value">${displayPrice(m.price)}</span>
                         </div>
                     ))}
                     <div className="detail-row detail-section-total">
                         <span className="detail-label">Merchandise Total</span>
-                        <span className="detail-value">${merchandiseTotal}</span>
+                        <span className="detail-value">${displayPrice(merchandiseTotal)}</span>
                     </div>
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Special Charges</h3>
                     {statement.specialCharges.map(c => (
-                        <div key={c.chargeId} className="detail-row">
+                        <div key={c.specialChargeId} className="detail-row">
                             <span className="detail-label">{c.name}{c.description ? ` — ${c.description}` : ''}</span>
-                            <span className="detail-value">${c.price}</span>
+                            <span className="detail-value">${displayPrice(c.price)}</span>
                         </div>
                     ))}
                     <div className="detail-row detail-section-total">
                         <span className="detail-label">Special Charges Total</span>
-                        <span className="detail-value">${specialChargesTotal}</span>
+                        <span className="detail-value">${displayPrice(specialChargesTotal)}</span>
                     </div>
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Cash Advance Items</h3>
                     {statement.cashAdvances.map(a => (
-                        <div key={a.advanceId} className="detail-row">
+                        <div key={a.cashAdvanceId} className="detail-row">
                             <span className="detail-label">{a.name}{a.provider ? ` — ${a.provider}` : ''}</span>
-                            <span className="detail-value">${a.amount}</span>
+                            <span className="detail-value">${displayPrice(a.amount)}</span>
                         </div>
                     ))}
                     <div className="detail-row detail-section-total">
                         <span className="detail-label">Cash Advances Total</span>
-                        <span className="detail-value">${cashAdvancesTotal}</span>
+                        <span className="detail-value">${displayPrice(cashAdvancesTotal)}</span>
                     </div>
                 </div>
                 <div className="detail-totals">
                     <div className="detail-row">
                         <span className="detail-label">Subtotal</span>
-                        <span className="detail-value">${subtotal}</span>
+                        <span className="detail-value">${displayPrice(subtotal)}</span>
                     </div>
                     <div className="detail-row">
                         <span className="detail-label">Down Payment</span>
                         {editingPayment ? (
                             <div className="detail-payment-edit">
-                                <input
-                                    type="text"
-                                    className="catalog-input-price"
+                                <PriceInput
                                     value={downPayment}
-                                    onChange={e => setDownPayment(sanitizePrice(e.target.value))}
-                                    onBlur={e => setDownPayment(formatPrice(e.target.value))}
+                                    onValueChange={e => setDownPayment(e)}
                                     placeholder="0.00"
                                     onKeyDown={e => {
                                         if (e.key === 'Enter') {
@@ -268,13 +257,13 @@ function StatementDetail() {
                             </div>
                         ) : (
                             <div className="detail-payment-display">
-                                <span className="detail-value">{downPayment ? `$${downPayment}` : '—'}</span>
+                                <span className="detail-value">{downPayment ? `$${displayPrice(downPayment)}` : '—'}</span>
                             </div>
                         )}
                     </div>
                     <div className="detail-row detail-grand-total">
                         <span className="detail-label">Balance Due</span>
-                        <span className="detail-value">${balanceDue}</span>
+                        <span className="detail-value">${displayPrice(balanceDue)}</span>
                     </div>
                 </div>
                 <div className="detail-actions">
