@@ -44,8 +44,13 @@ function StatementList() {
         getSortedRowModel: getSortedRowModel()
     })
 
-    if (loading) return <div>Loading...</div>
-    if (error) return <div>{error}</div>
+    if (loading) {
+        return <div>Loading...</div>
+    }
+
+    if (error) {
+        return <div>Failed to load statements</div>
+    }
 
     return (
         <div className="page statement-list">

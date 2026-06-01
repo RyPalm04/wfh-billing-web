@@ -104,8 +104,13 @@ function StatementDetail() {
     }, [statement])
 
 
-    if (loading) return <div>Loading...</div>
-    if (error) return <div>{error}</div>
+    if (loading) {
+        return <div>Loading...</div>
+    }
+
+    if (error) {
+        return <div>Failed to load statement</div>
+    }
 
 
     const packageCost = parseFloat(statement.servicePackage?.defaultCost || 0)

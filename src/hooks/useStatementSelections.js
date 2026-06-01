@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import logger from '../utils/logger'
 
 export function useStatementSelections(catalog) {
     const [selectedServices, setSelectedServices] = useState({})
