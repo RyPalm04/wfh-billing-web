@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { getStatements } from '../api/statementApi'
 import { Link, useNavigate } from 'react-router-dom'
 import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table'
 import { MdArrowUpward, MdArrowDownward, MdSwapVert } from 'react-icons/md'
-import logger from '../utils/logger'
+import { useFetchData } from '../hooks/useFetchData'
+import { formatDate } from '../utils/date'
 import './StatementList.css'
 
 const columns = [
@@ -12,19 +13,12 @@ const columns = [
     {
         accessorKey: 'serviceDate',
         header: 'Service Date',
-        cell: ({ getValue }) => {
-            const value = getValue()
-            if (!value) return 'N/A'
-            const [year, month, day] = value.split('-')
-            return `${month}/${day}/${year}`
-        }
+        cell: ({ getValue }) => formatDate(getValue())
     },
 ]
 
 function StatementList() {
-    const [statements, setStatements] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    const { data: statements, loading, error } = useFetchData(() => getStatements().then(r => r.data))
     const [search, setSearch] = useState('')
     const [fromDate, setFromDate] = useState('')
     const [toDate, setToDate] = useState('')
@@ -32,23 +26,7 @@ function StatementList() {
 
     const navigate = useNavigate()
 
-    useEffect(() => {
-        logger.debug('Fetching statements...')
-        getStatements()
-            .then(response => {
-                logger.debug('Fetched statements:', response.data)
-                setStatements(response.data)
-                setLoading(false)
-            })
-            .catch(err => {
-                logger.error('Error fetching statements:', err)
-                setError('Failed to load statements')
-                setLoading(false)
-            })
-    }, [])
-
-
-    const filtered = useMemo(() => statements.filter(s => {
+    const filtered = useMemo(() => (statements ?? []).filter(s => {
         const matchesSearch = search === '' ||
             s.servicesForName.toLowerCase().includes(search.toLowerCase()) ||
             s.controlNumber.toString().includes(search)
@@ -86,7 +64,7 @@ function StatementList() {
                     <input id="toDate" type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
                 </div>
             </div>
-            {statements.length === 0 ? (
+            {(statements ?? []).length === 0 ? (
                 <div className="empty-state">
                     <p>No statements found. <Link to="/statements/new" className="btn btn-primary">Create a new statement</Link>.</p>
                 </div>
