@@ -6,16 +6,25 @@ import toast from 'react-hot-toast'
 import logger from '../utils/logger'
 import './StatementDetail.css'
 import PriceInput from '../components/PriceInput'
+import { useFetchData } from '../hooks/useFetchData'
+import { formatDate } from '../utils/date'
 
 function StatementDetail() {
     const { id } = useParams()
-    const [statement, setStatement] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    const { data: statement, loading, error } = useFetchData(() => getStatement(id).then(r => r.data), [id])
     const [editingPayment, setEditingPayment] = useState(false)
     const [downPayment, setDownPayment] = useState('')
     const [savedPayment, setSavedPayment] = useState('')
     const navigate = useNavigate()
+
+    function DetailRow({ label, value, className }) {
+        return (
+            <div className={`detail-row${className ? ` ${className}` : ''}`}>
+                <span className="detail-label">{label}</span>
+                <span className="detail-value">{value}</span>
+            </div>
+        )
+    }
 
     function handleKeyDown(event) {
         if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable) {
@@ -52,23 +61,6 @@ function StatementDetail() {
         }
     }, [editingPayment, downPayment, savedPayment])
 
-    useEffect(() => {
-        logger.debug('Fetching statement...')
-        getStatement(id)
-            .then(response => {
-                logger.debug('Fetched statement:', response.data)
-                setStatement(response.data)
-                setDownPayment(response.data.payment ?? '')
-                setSavedPayment(response.data.payment ?? '')
-                setLoading(false)
-            })
-            .catch(err => {
-                logger.error('Error fetching statement:', err)
-                setError('Failed to load statement')
-                setLoading(false)
-            })
-    }, [id])
-
     function handleDownloadPdf() {
         logger.debug('Downloading statement PDF...')
         getStatementPdf(id)
@@ -103,6 +95,14 @@ function StatementDetail() {
                 toast.error('Failed to save down payment')
             })
     }
+    
+    useEffect(() => {
+        if (statement) {
+            setDownPayment(statement.payment ?? '')
+            setSavedPayment(statement.payment ?? '')
+        }
+    }, [statement])
+
 
     if (loading) return <div>Loading...</div>
     if (error) return <div>{error}</div>
@@ -132,35 +132,18 @@ function StatementDetail() {
         <div className="page statement-detail">
             <div className="detail-card">
                 <h2 className="section-header">Service Summary</h2>
-                <div className="detail-row">
-                    <span className="detail-label">Control Number</span>
-                    <span className="detail-value">{statement.controlNumber}</span>
-                </div>
-                <div className="detail-row">
-                    <span className="detail-label">Services For</span>
-                    <span className="detail-value">{statement.servicesForName}</span>
-                </div>
+                <DetailRow label="Control Number" value={statement.controlNumber} />
+                <DetailRow label="Services For" value={statement.servicesForName} />
                 {statement.serviceDate && (
-                    <div className="detail-row">
-                        <span className="detail-label">Service Date</span>
-                        <span className="detail-value">{statement.serviceDate}</span>
-                    </div>
+                    <DetailRow label="Service Date" value={formatDate(statement.serviceDate)} />
                 )}
                 <div className="detail-section">
                     <h3 className="detail-section-header">Services, Facilities, & Transportation</h3>
                     {statement.servicePackage && (
                         <>
-                            <div className="detail-row">
-                                <span className="detail-label">
-                                    Package: {statement.servicePackage.name}{statement.servicePackage.legacyPackage ? ' (Legacy)' : ''}
-                                </span>
-                                <span className="detail-value">{displayPrice(statement.servicePackage.defaultCost)}</span>
-                            </div>
+                            <DetailRow label={`Package: ${statement.servicePackage.name}${statement.servicePackage.legacyPackage ? ' (Legacy)' : ''}`} value={displayPrice(statement.servicePackage.defaultCost)} />
                             {statement.services.filter(s => s.inPackage).map(s => (
-                                <div key={s.serviceId} className="detail-row detail-row--package-service">
-                                    <span className="detail-label">{s.name}</span>
-                                    <span className="detail-value">Included</span>
-                                </div>
+                                <DetailRow key={s.serviceId} label={s.name} value="Included" className="detail-row detail-row--package-service"/>
                             ))}
                         </>
                     )}
@@ -178,68 +161,38 @@ function StatementDetail() {
                         const nonPackageServices = statement.services.filter(s => !s.inPackage)
                         if (nonPackageServices.length === 0 && !statement.servicePackage) {
                             return (
-                                <div className="detail-row">
-                                    <span className="detail-label">None</span>
-                                    <span className="detail-value">$0.00</span>
-                                </div>
+                                <DetailRow label="None" value="$0.00" />
                             )
                         }
                         return nonPackageServices.map(s => (
-                            <div key={s.serviceId} className="detail-row">
-                                <span className="detail-label">{s.name}</span>
-                                <span className="detail-value">{displayPrice(s.price)}</span>
-                            </div>
+                            <DetailRow key={s.serviceId} label={s.name} value={displayPrice(s.price)} />
                         ))
                     })()}
-                    <div className="detail-row detail-section-total">
-                        <span className="detail-label">Services Total</span>
-                        <span className="detail-value">{displayPrice(servicesTotal)}</span>
-                    </div>
+                    <DetailRow label="Services Total" value={displayPrice(servicesTotal)} className = "detail-row detail-section-total" />
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Merchandise</h3>
                     {statement.merchandise.map(m => (
-                        <div key={m.merchandiseId} className="detail-row">
-                            <span className="detail-label">{m.name}{m.description ? ` — ${m.description}` : ''}</span>
-                            <span className="detail-value">{displayPrice(m.price)}</span>
-                        </div>
+                        <DetailRow key={m.merchandiseId} label={`${m.name}${m.description ? ` — ${m.description}` : ''}`} value={displayPrice(m.price)} />
                     ))}
-                    <div className="detail-row detail-section-total">
-                        <span className="detail-label">Merchandise Total</span>
-                        <span className="detail-value">{displayPrice(merchandiseTotal)}</span>
-                    </div>
+                    <DetailRow label="Merchandise Total" value={displayPrice(merchandiseTotal)} className="detail-row detail-section-total" />
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Special Charges</h3>
                     {statement.specialCharges.map(c => (
-                        <div key={c.specialChargeId} className="detail-row">
-                            <span className="detail-label">{c.name}{c.description ? ` — ${c.description}` : ''}</span>
-                            <span className="detail-value">{displayPrice(c.price)}</span>
-                        </div>
+                        <DetailRow key={c.specialChargeId} label={`${c.name}${c.description ? ` — ${c.description}` : ''}`} value={displayPrice(c.price)} />
                     ))}
-                    <div className="detail-row detail-section-total">
-                        <span className="detail-label">Special Charges Total</span>
-                        <span className="detail-value">{displayPrice(specialChargesTotal)}</span>
-                    </div>
+                    <DetailRow label="Special Charges Total" value={displayPrice(specialChargesTotal)} className="detail-row detail-section-total" />
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Cash Advance Items</h3>
                     {statement.cashAdvances.map(a => (
-                        <div key={a.cashAdvanceId} className="detail-row">
-                            <span className="detail-label">{a.name}{a.provider ? ` — ${a.provider}` : ''}</span>
-                            <span className="detail-value">{displayPrice(a.amount)}</span>
-                        </div>
+                        <DetailRow key={a.cashAdvanceId} label={`${a.name}${a.provider ? ` — ${a.provider}` : ''}`} value={displayPrice(a.amount)} />
                     ))}
-                    <div className="detail-row detail-section-total">
-                        <span className="detail-label">Cash Advances Total</span>
-                        <span className="detail-value">{displayPrice(cashAdvancesTotal)}</span>
-                    </div>
+                    <DetailRow label="Cash Advances Total" value={displayPrice(cashAdvancesTotal)} className="detail-row detail-section-total" />
                 </div>
                 <div className="detail-totals">
-                    <div className="detail-row">
-                        <span className="detail-label">Subtotal</span>
-                        <span className="detail-value">{displayPrice(subtotal)}</span>
-                    </div>
+                    <DetailRow label="Subtotal" value={displayPrice(subtotal)} />
                     <div className="detail-row">
                         <span className="detail-label">Down Payment</span>
                         {editingPayment ? (
@@ -271,10 +224,7 @@ function StatementDetail() {
                             </div>
                         )}
                     </div>
-                    <div className="detail-row detail-grand-total">
-                        <span className="detail-label">Balance Due</span>
-                        <span className="detail-value">{displayPrice(balanceDue)}</span>
-                    </div>
+                    <DetailRow label="Balance Due" value={displayPrice(balanceDue)} className="detail-row detail-grand-total" />
                 </div>
                 <div className="detail-actions">
                     <button disabled={editingPayment} className="btn btn-secondary" onClick={() => setEditingPayment(true)}>
