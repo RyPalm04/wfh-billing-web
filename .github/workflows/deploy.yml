@@ -40,8 +40,12 @@
         - name: Alias deployment  
           run: |
             TAG=${GITHUB_REF#refs/tags/}
-            BETA_PART=$(echo $TAG | grep -o 'beta\.[0-9]*' | tr -d '.')
-            vercel alias set ${{ steps.deploy.outputs.url }} wfh-billing-git-${BETA_PART}.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
+            if echo "$TAG" | grep -q 'beta'; then
+              ALIAS_PART=$(echo "$TAG" | grep -o 'beta\.[0-9]*' | tr -d '.')
+            elif echo "$TAG" | grep -q 'rc'; then
+              ALIAS_PART=$(echo "$TAG" | grep -o 'rc\.[0-9]*' | tr -d '.')
+            fi
+            vercel alias set ${{ steps.deploy.outputs.url }} wfh-billing-git-${ALIAS_PART}.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
 
     deploy-production:
       needs: test
