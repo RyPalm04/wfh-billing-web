@@ -31,11 +31,13 @@
             node-version: '22'
         - name: Install Vercel CLI
           run: npm install -g vercel
+        - name: Set version
+          run: npm pkg set version="$(echo '${{ github.ref_name }}' | sed 's/^v//')"
         - name: Deploy to Vercel Preview
           id: deploy
           run: |
-            url=$(vercel deploy --build-env 'GITHUB_REF_NAME=${ github.ref.name }' --token=${{ secrets.VERCEL_TOKEN }})
-            echo "url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
+            url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})
+            echo "url=$url" >> $GITHUB_OUTPUT
           env:
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
             VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -60,9 +62,10 @@
             node-version: '22'
         - name: Install Vercel CLI
           run: npm install -g vercel
+        - name: Set version
+          run: npm pkg set version="$(echo '${{ github.ref_name }}' | sed 's/^v//')"
         - name: Deploy to Vercel Production
           run: |
-            url=$(vercel deploy --build-env 'GITHUB_REF_NAME=${ github.ref.name }' --token=${{ secrets.VERCEL_TOKEN }})
             vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
           env:
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

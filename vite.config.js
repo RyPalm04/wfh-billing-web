@@ -32,8 +32,10 @@ function resolveQualifier() {
   return 'SNAPSHOT'
 }
 
-const qualifier = resolveQualifier()
-const appVersion = qualifier ? `${version}-${qualifier}` : version
+const appVersion = version.includes('-') ? version : (() => {
+  const qualifier = resolveQualifier()
+  return qualifier ? `${version}-${qualifier}` : version
+})()
 
 // https://vite.dev/config/
 export default defineConfig({
