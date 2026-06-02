@@ -27,7 +27,9 @@ function FeedbackModal({ open, onClose }) {
                 page: window.location.href,
                 userAgent: navigator.userAgent,
                 screenSize: `${window.innerWidth}x${window.innerHeight}`,
-                referrer: document.referrer || 'direct'
+                referrer: document.referrer || 'direct',
+                appVersion: __APP_VERSION__,
+                platform: 'web'
             }
         })
             .then(() => {
