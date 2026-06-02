@@ -106,14 +106,14 @@ function NewStatement() {
     }, [])
 
     const {
-      selectedServices, selectedMerchandise, selectedSpecialCharges, selectedCashAdvances, packageId,
-      setSelectedServices, setSelectedMerchandise, setSelectedSpecialCharges, setSelectedCashAdvances, setPackageId,
-      toggleService, toggleMerchandise, toggleSpecialCharge, toggleCashAdvance,
-      updateMerchandiseQuantity, updateServiceDescription, updateServicePrice,
-      updateMerchandisePrice, updateMerchandiseDescription, updateSpecialChargePrice,
-      updateSpecialChargeDescription, updateCashAdvanceProvider, updateCashAdvanceAmount,
-      handlePackageChange
-  } = useStatementSelections(catalog)
+        selectedServices, selectedMerchandise, selectedSpecialCharges, selectedCashAdvances, packageId,
+        setSelectedServices, setSelectedMerchandise, setSelectedSpecialCharges, setSelectedCashAdvances, setPackageId,
+        toggleService, toggleMerchandise, toggleSpecialCharge, toggleCashAdvance,
+        updateMerchandiseQuantity, updateServiceDescription, updateServicePrice,
+        updateMerchandisePrice, updateMerchandiseDescription, updateSpecialChargePrice,
+        updateSpecialChargeDescription, updateCashAdvanceProvider, updateCashAdvanceAmount,
+        handlePackageChange
+    } = useStatementSelections(catalog)
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -263,7 +263,7 @@ function NewStatement() {
                                     value={reasonForEmbalming}
                                     onChange={e => setReasonForEmbalming(e.target.value)}
                                 />
-                                {errors.reasonForEmbalming && <div className="error">Reason for embalming is required</div>}
+                                {errors.reasonForEmbalming && <div className="form-error">Reason for embalming is required</div>}
                             </div>
                         )}
 
@@ -293,7 +293,7 @@ function NewStatement() {
                                                 onChange={e => updateServiceDescription(service.id, e.target.value)}
                                             />
                                         )}
-                                        {errors[`service_desc_${service.id}`] && <div className="error">Description required</div>}
+                                        {errors[`service_desc_${service.id}`] && <div className="form-error">Description required</div>}
                                         {service.defaultCost ? (
                                             <span className="catalog-item-price">{displayPrice(service.defaultCost)}</span>
                                         ) : (
@@ -304,7 +304,7 @@ function NewStatement() {
                                                 onValueChange={e => updateServicePrice(service.id, e)}
                                             />
                                         )}
-                                        {errors[`service_${service.id}`] && <div className="error">Price required</div>}
+                                        {errors[`service_${service.id}`] && <div className="form-error">Price required</div>}
                                     </div>
                                 )}
                             </div>
@@ -359,7 +359,7 @@ function NewStatement() {
                                                         onChange={e => updateMerchandiseDescription(item.id, e.target.value)}
                                                     />
                                                 )}
-                                                {errors[`merchandise_desc_${item.id}`] && <div className="error">Description required</div>}
+                                                {errors[`merchandise_desc_${item.id}`] && <div className="form-error">Description required</div>}
                                                 {item.defaultCost ? (
                                                     <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                                 ) : (
@@ -370,7 +370,7 @@ function NewStatement() {
                                                         onValueChange={e => updateMerchandisePrice(item.id, e)}
                                                     />
                                                 )}
-                                                {errors[`merchandise_${item.id}`] && <div className="error">Price required</div>}
+                                                {errors[`merchandise_${item.id}`] && <div className="form-error">Price required</div>}
                                             </>
                                         )}
                                     </div>
@@ -409,7 +409,7 @@ function NewStatement() {
                                                 onBlur={e => updateSpecialChargeDescription(item.id, e.target.value)}
                                             />
                                         )}
-                                        {errors[`specialCharge_desc_${item.id}`] && <div className="error">Description required</div>}
+                                        {errors[`specialCharge_desc_${item.id}`] && <div className="form-error">Description required</div>}
                                         {item.defaultCost ? (
                                             <span className="catalog-item-price">{displayPrice(item.defaultCost)}</span>
                                         ) : (
@@ -420,7 +420,7 @@ function NewStatement() {
                                                 onValueChange={e => updateSpecialChargePrice(item.id, e)}
                                             />
                                         )}
-                                        {errors[`specialCharge_${item.id}`] && <div className="error">Price required</div>}
+                                        {errors[`specialCharge_${item.id}`] && <div className="form-error">Price required</div>}
                                     </div>
                                 )}
                             </div>
@@ -451,14 +451,14 @@ function NewStatement() {
                                             value={selectedCashAdvances[item.id].provider}
                                             onChange={e => updateCashAdvanceProvider(item.id, e.target.value)}
                                         />
-                                        {errors[`cashAdvance_provider_${item.id}`] && <div className="error">Provider required</div>}
+                                        {errors[`cashAdvance_provider_${item.id}`] && <div className="form-error">Provider required</div>}
                                         <PriceInput
                                             aria-label={`Amount for ${item.name}`}
                                             placeholder="$0.00"
                                             value={selectedCashAdvances[item.id].amount}
                                             onValueChange={e => updateCashAdvanceAmount(item.id, e)}
                                         />
-                                        {errors[`cashAdvance_${item.id}`] && <div className="error">Amount required</div>}
+                                        {errors[`cashAdvance_${item.id}`] && <div className="form-error">Amount required</div>}
                                     </div>
                                 )}
                             </div>

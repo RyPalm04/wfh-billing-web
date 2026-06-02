@@ -68,6 +68,12 @@
       justify-content: flex-end;
   }
 
+  .form-error {
+      color: var(--error);
+      margin-bottom: 16px;
+      font-size: 13px;
+  }
+
   .catalog-section {
       margin-top: 24px;
       padding-top: 16px;

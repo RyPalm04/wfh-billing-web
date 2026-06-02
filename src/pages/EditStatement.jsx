@@ -265,7 +265,7 @@ function EditStatement() {
                                     value={reasonForEmbalming}
                                     onChange={e => setReasonForEmbalming(e.target.value)}
                                 />
-                                {errors.reasonForEmbalming && <div className="error">Reason for embalming is required</div>}
+                                {errors.reasonForEmbalming && <div className="form-error">Reason for embalming is required</div>}
                             </div>
                         )}
 
@@ -295,7 +295,7 @@ function EditStatement() {
                                                 onChange={e => updateServiceDescription(service.id, e.target.value)}
                                             />
                                         )}
-                                        {errors[`service_desc_${service.id}`] && <div className="error">Description required</div>}
+                                        {errors[`service_desc_${service.id}`] && <div className="form-error">Description required</div>}
                                         {service.defaultCost ? (
                                             <span className="catalog-item-price">{displayPrice(service.defaultCost)}</span>
                                         ) : (
@@ -306,7 +306,7 @@ function EditStatement() {
                                                 onValueChange={e => updateServicePrice(service.id, e)}
                                             />
                                         )}
-                                        {errors[`service_${service.id}`] && <div className="error">Price required</div>}
+                                        {errors[`service_${service.id}`] && <div className="form-error">Price required</div>}
                                     </div>
                                 )}
                             </div>
