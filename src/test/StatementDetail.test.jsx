@@ -3,11 +3,21 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom'
 import StatementDetail from '../pages/StatementDetail'
 import * as statementApi from '../api/statementApi'
+import * as catalogApi from '../api/catalogApi'
+import * as settingsApi from '../api/settingsApi'
 
 vi.mock('../api/statementApi', () => ({
     getStatement: vi.fn(),
     getStatementPdf: vi.fn(),
     updateStatement: vi.fn()
+}))
+
+vi.mock('../api/catalogApi', () => ({
+    getCatalog: vi.fn()
+}))
+
+vi.mock('../api/settingsApi', () => ({
+    getSettings: vi.fn()
 }))
 
 vi.mock('react-hot-toast', () => ({
@@ -38,9 +48,23 @@ const mockStatement = {
 
 }
 
+const mockCatalog = {
+    packages: [],
+    services: [],
+    merchandise: [],
+    specialCharges: [],
+    cashAdvances: []
+}
+
+const mockSettings = {
+    salesTaxRate: null
+}
+
 describe('StatementDetail', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        catalogApi.getCatalog.mockResolvedValue({ data: mockCatalog })
+        settingsApi.getSettings.mockResolvedValue({ data: mockSettings })
     })
 
     it('shows loading state initially', () => {
