@@ -34,7 +34,7 @@
         - name: Deploy to Vercel Preview
           id: deploy
           run: |
-            url=$(vercel deploy --build-env GITHUB_REF_NAME=${ github.ref.name } --token=${{ secrets.VERCEL_TOKEN }})
+            url=$(vercel deploy --build-env 'GITHUB_REF_NAME=${ github.ref.name }' --token=${{ secrets.VERCEL_TOKEN }})
             echo "url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
           env:
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -62,7 +62,7 @@
           run: npm install -g vercel
         - name: Deploy to Vercel Production
           run: |
-            url=$(vercel deploy --build-env GITHUB_REF_NAME=${ github.ref.name } --token=${{ secrets.VERCEL_TOKEN }})
+            url=$(vercel deploy --build-env 'GITHUB_REF_NAME=${ github.ref.name }' --token=${{ secrets.VERCEL_TOKEN }})
             vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
           env:
             VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
