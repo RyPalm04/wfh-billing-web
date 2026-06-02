@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCatalog } from '../api/catalogApi'
 import { createStatement, getNextControlNumber } from '../api/statementApi'
-import { getSettings } from '../api/settingsApi'
 import { displayPrice } from '../utils/price'
 import { useStatementSelections } from '../hooks/useStatementSelections'
 import Shepherd from 'shepherd.js'
@@ -23,7 +22,6 @@ function NewStatement() {
     const [placeOfDeath, setPlaceOfDeath] = useState('')
     const [submitting, setSubmitting] = useState(false)
     const [reasonForEmbalming, setReasonForEmbalming] = useState('')
-    const [salesTaxRate, setSalesTaxRate] = useState(null)
     const [errors, setErrors] = useState({})
     const navigate = useNavigate()
 
@@ -92,13 +90,12 @@ function NewStatement() {
 
     useEffect(() => {
         logger.debug('Fetching catalog and next control number for new statement form')
-        Promise.all([getCatalog(), getNextControlNumber(), getSettings()])
-            .then(([catalogResponse, controlNumberResponse, settingsResponse]) => {
+        Promise.all([getCatalog(), getNextControlNumber()])
+            .then(([catalogResponse, controlNumberResponse]) => {
                 logger.debug('Fetched catalog:', catalogResponse.data)
                 logger.debug('Fetched next control number:', controlNumberResponse.data)
                 setCatalog(catalogResponse.data)
                 setControlNumber(controlNumberResponse.data)
-                setSalesTaxRate(settingsResponse.data.salesTaxRate)
                 setLoading(false)
             })
             .catch((error) => {
@@ -131,7 +128,7 @@ function NewStatement() {
         const selectedPackage = packageId ? catalog.packages.find(p => p.id === packageId) : null
 
         createStatement({
-            controlNumber, servicesForName, serviceDate, dateOfDeath, placeOfDeath, reasonForEmbalming, salesTaxRate,
+            controlNumber, servicesForName, serviceDate, dateOfDeath, placeOfDeath, reasonForEmbalming,
             servicePackage: selectedPackage ? {
                 id: selectedPackage.id,
                 sortOrder: selectedPackage.sortOrder,

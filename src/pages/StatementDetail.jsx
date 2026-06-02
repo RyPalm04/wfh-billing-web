@@ -8,10 +8,23 @@ import './StatementDetail.css'
 import PriceInput from '../components/PriceInput'
 import { useFetchData } from '../hooks/useFetchData'
 import { formatDate } from '../utils/date'
+import { getSettings } from '../api/settingsApi'
+import { getCatalog } from '../api/catalogApi'
 
 function StatementDetail() {
     const { id } = useParams()
-    const { data: statement, loading, error } = useFetchData(() => getStatement(id).then(r => r.data), [id])
+    const { data, loading, error } = useFetchData(() =>
+        Promise.all([getStatement(id), getCatalog(), getSettings()])
+            .then(([statementResponse, catalogResponse, settingsResponse]) => ({
+                statement: statementResponse.data,
+                catalog: catalogResponse.data,
+                settings: settingsResponse.data
+            })),
+        [id]
+    )
+    const statement = data?.statement
+    const catalog = data?.catalog
+    const settings = data?.settings
     const [editingPayment, setEditingPayment] = useState(false)
     const [downPayment, setDownPayment] = useState('')
     const [savedPayment, setSavedPayment] = useState('')
@@ -95,7 +108,7 @@ function StatementDetail() {
                 toast.error('Failed to save down payment')
             })
     }
-    
+
     useEffect(() => {
         if (statement) {
             setDownPayment(statement.payment ?? '')
@@ -112,6 +125,9 @@ function StatementDetail() {
         return <div>Failed to load statement</div>
     }
 
+    if (!statement || !catalog) {
+        return null
+    }
 
     const packageCost = parseFloat(statement.servicePackage?.defaultCost || 0)
     const servicesTotal = (
@@ -131,7 +147,15 @@ function StatementDetail() {
         parseFloat(cashAdvancesTotal)
     ).toFixed(2)
 
-    const balanceDue = (parseFloat(subtotal) - parseFloat(downPayment || 0)).toFixed(2)
+    const taxableMerchandiseIds = new Set((catalog?.merchandise ?? []).filter(m => m.salesTaxable).map(m => m.id))
+
+    const salesTax = statement.merchandise
+        .filter(m => taxableMerchandiseIds.has(m.merchandiseId))
+        .reduce((sum, m) => sum + (parseFloat(m.price) || 0), 0)
+
+    const salesTaxTotal = (salesTax * parseFloat(settings.salesTaxRate || 0)).toFixed(2)
+
+    const balanceDue = (parseFloat(subtotal) + parseFloat(salesTaxTotal) - parseFloat(downPayment || 0)).toFixed(2)
 
     return (
         <div className="page statement-detail">
@@ -148,7 +172,7 @@ function StatementDetail() {
                         <>
                             <DetailRow label={`Package: ${statement.servicePackage.name}${statement.servicePackage.legacyPackage ? ' (Legacy)' : ''}`} value={displayPrice(statement.servicePackage.defaultCost)} />
                             {statement.services.filter(s => s.inPackage).map(s => (
-                                <DetailRow key={s.serviceId} label={s.name} value="Included" className="detail-row detail-row--package-service"/>
+                                <DetailRow key={s.serviceId} label={s.name} value="Included" className="detail-row detail-row--package-service" />
                             ))}
                         </>
                     )}
@@ -173,7 +197,7 @@ function StatementDetail() {
                             <DetailRow key={s.serviceId} label={s.name} value={displayPrice(s.price)} />
                         ))
                     })()}
-                    <DetailRow label="Services Total" value={displayPrice(servicesTotal)} className = "detail-row detail-section-total" />
+                    <DetailRow label="Services Total" value={displayPrice(servicesTotal)} className="detail-row detail-section-total" />
                 </div>
                 <div className="detail-section">
                     <h3 className="detail-section-header">Merchandise</h3>
@@ -198,6 +222,9 @@ function StatementDetail() {
                 </div>
                 <div className="detail-totals">
                     <DetailRow label="Subtotal" value={displayPrice(subtotal)} />
+                    {settings.salesTaxRate && (
+                        <DetailRow label={`Sales Tax (${(parseFloat(settings.salesTaxRate) * 100).toFixed(2)}%)`} value={displayPrice(salesTaxTotal)} />
+                    )}
                     <div className="detail-row">
                         <span className="detail-label">Down Payment</span>
                         {editingPayment ? (
