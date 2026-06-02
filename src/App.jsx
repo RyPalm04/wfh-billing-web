@@ -13,6 +13,7 @@ import logger from './utils/logger'
 import { Toaster } from 'react-hot-toast'
 import FeedbackModal from './components/FeedbackModal'
 import './App.css'
+import AppFooter from './components/AppFooter'
 
 function AppContent() {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -27,7 +28,7 @@ function AppContent() {
         return
       }
 
-      if(document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable) {
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable) {
         return
       }
 
@@ -71,6 +72,7 @@ function AppContent() {
         </ErrorBoundary>
         <button className="feedback-fab" onClick={() => setFeedbackOpen(prev => !prev)}>Feedback</button>
         <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+        <AppFooter />
       </main>
     </>
   )
