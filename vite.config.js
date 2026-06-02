@@ -5,7 +5,7 @@ import { readFileSync } from 'fs'
 const { version } = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
 function resolveQualifier() {
-  const ref = process.env.GITHUB_REF_NAME || ''
+  const ref = process.env.GITHUB_REF_NAME || process.env.VERCEL_GIT_COMMIT_REF || ''
 
   if (!ref) {
     return 'LOCAL'

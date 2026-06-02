@@ -72,8 +72,8 @@ function AppContent() {
         </ErrorBoundary>
         <button className="feedback-fab" onClick={() => setFeedbackOpen(prev => !prev)}>Feedback</button>
         <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-        <AppFooter />
       </main>
+      <AppFooter />
     </>
   )
 }
