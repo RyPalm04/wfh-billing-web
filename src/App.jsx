@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
+import { Toaster } from 'react-hot-toast'
 import ErrorFallback from './components/ErrorFallback'
 import StatementList from './pages/StatementList'
 import StatementDetail from './pages/StatementDetail'
@@ -12,10 +13,10 @@ import Settings from './pages/Settings'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import logger from './utils/logger'
-import { Toaster } from 'react-hot-toast'
 import FeedbackModal from './components/FeedbackModal'
-import './App.css'
+import ProtectedRoute from './components/ProtectedRoute'
 import AppFooter from './components/AppFooter'
+import './App.css'
 
 function AppContent() {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -65,13 +66,15 @@ function AppContent() {
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/statements" element={<StatementList />} />
-            <Route path="/statements/new" element={<NewStatement />} />
-            <Route path="/statements/:id" element={<StatementDetail />} />
-            <Route path="/statements/:id/edit" element={<EditStatement />} />
-            <Route path="/settings" element={<Settings />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/statements" element={<StatementList />} />
+              <Route path="/statements/new" element={<NewStatement />} />
+              <Route path="/statements/:id" element={<StatementDetail />} />
+              <Route path="/statements/:id/edit" element={<EditStatement />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
           </Routes>
         </ErrorBoundary>
         <button className="feedback-fab" onClick={() => setFeedbackOpen(prev => !prev)}>Feedback</button>
