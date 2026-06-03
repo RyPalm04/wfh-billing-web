@@ -21,6 +21,8 @@ export function AuthProvider({ children }) {
     }, [])
 
     const signIn = (email, password) => supabase.auth.signInWithPassword({ email, password })
+
+    const signOut = () => supabase.auth.signOut()
     
     return (
         <AuthContext.Provider value={{ session, loading, signIn, signOut }}>

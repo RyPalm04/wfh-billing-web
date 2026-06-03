@@ -9,6 +9,7 @@ import EditStatement from './pages/EditStatement'
 import Home from './pages/Home'
 import Nav from './components/Nav'
 import Settings from './pages/Settings'
+import Login from './pages/Login'
 import logger from './utils/logger'
 import { Toaster } from 'react-hot-toast'
 import FeedbackModal from './components/FeedbackModal'
@@ -68,6 +69,7 @@ function AppContent() {
             <Route path="/statements/:id" element={<StatementDetail />} />
             <Route path="/statements/:id/edit" element={<EditStatement />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </ErrorBoundary>
         <button className="feedback-fab" onClick={() => setFeedbackOpen(prev => !prev)}>Feedback</button>
