@@ -1,11 +1,28 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MdSettings } from 'react-icons/md'
 import logo from '/favicon.svg'
 import './Nav.css'
+import { supabase } from '../supabaseClient'
 
 function Nav() {
     const [menuOpen, setMenuOpen] = useState(false)
+    const [session, setSession] = useState(null)
+
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session)
+        })
+
+        return () => subscription.unsubscribe
+    }, [])
+
+    async function logout() {
+        console.log("User signed out")
+        await supabase.auth.signOut()
+    }
 
     return (
         <nav className="nav">
@@ -32,6 +49,10 @@ function Nav() {
                     <MdSettings size={18} />
                     Settings
                 </Link>
+                {session
+                    ? <Link to="/login" className="nav-link" onClick={() => logout()}>Logout</Link>
+                    : <Link to="/login" className="nav-link">Login</Link>
+                }
             </div>
         </nav>
     )
