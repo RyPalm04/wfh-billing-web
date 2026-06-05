@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import './Login.css'
+import AuthLayout from '../components/AuthLayout'
 
 function Signup() {
     const [funeralHomeName, setFuneralHomeName] = useState('')
@@ -32,24 +33,20 @@ function Signup() {
 
     if (confirmed) {
         return (
-            <div className="login-wrapper">
-                <h1 className="login-title">Eternatel</h1>
-                <p className="login-subtitle">Deathcare CMS</p>
-                <p style={{ marginTop: '24px', color: 'var(--secondary)', fontSize: '14px', lineHeight: '1.6' }}>
+            <AuthLayout>
+                <p className="auth-message">
                     Check your email to confirm your account before signing in.
                 </p>
                 <p style={{ marginTop: '16px', fontSize: '13px' }}>
                     <Link to="/login" style={{ color: 'var(--green)', fontWeight: '700', textDecoration: 'none' }}>Back to sign in</Link>
                 </p>
-            </div>
+            </AuthLayout>
         )
     }
 
     return (
-        <div className="login-wrapper">
+        <AuthLayout>
             <div className="login-card">
-                <h1 className="login-title">Eternatel</h1>
-                <p className="login-subtitle">Deathcare CMS</p>
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="login-field">
                         <label htmlFor="funeralHomeName">Funeral Home Name</label>
@@ -91,7 +88,7 @@ function Signup() {
                     Already have an account? <Link to="/login">Sign in</Link>
                 </p>
             </div>
-        </div>
+        </AuthLayout>
     )
 }
 

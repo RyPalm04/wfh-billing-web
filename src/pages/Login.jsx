@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './Login.css'
+import AuthLayout from '../components/AuthLayout'
 
 function Login() {
     const { signIn } = useAuth()
@@ -27,10 +28,8 @@ function Login() {
     }
 
     return (
-        <div className="login-wrapper">
+        <AuthLayout>
             <div className="login-card">
-                <h1 className="login-title">Eternatel</h1>
-                <p className="login-subtitle">Deathcare CMS</p>
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="login-field">
                         <label htmlFor="email">Email</label>
@@ -49,7 +48,7 @@ function Login() {
                     Don't have an account? <Link to="/signup">Sign up</Link>
                 </p>
             </div>
-        </div>
+        </AuthLayout>
     )
 }
 
