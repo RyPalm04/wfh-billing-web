@@ -4,12 +4,15 @@ import { useFetchData } from '../hooks/useFetchData'
 import './Settings.css'
 import toast from 'react-hot-toast'
 import logger from '../utils/logger'
+import { generateLicenseKey, getLicenseKey } from '../api/desktopApi'
 
 function Settings() {
     const { data: settings, loading, error } = useFetchData(() => getSettings().then(r => r.data))
     const [savedSettings, setSavedSettings] = useState(null)
     const [formSettings, setFormSettings] = useState(null)
     const [errors, setErrors] = useState({})
+    const [licenseKey, setLicenseKey] = useState(null)
+    const [licenseKeyError, setLicenseKeyError] = useState(null)
 
     useEffect(() => {
         if (settings) {
@@ -36,6 +39,22 @@ function Settings() {
                 toast.success("Settings saved")
             })
             .catch(() => { toast.error("Failed to save settings") })
+    }
+
+    useEffect(() => {
+        getLicenseKey()
+            .then(r => setLicenseKey(r.data.licenseKey))
+            .catch(() => setLicenseKeyError(true))
+    }, [])
+
+    function handleGenerateKey() {
+        generateLicenseKey()
+            .then(r => {
+                setLicenseKey(r.data.licenseKey)
+                setLicenseKeyError(false)
+                toast.success("Desktop access activated")
+            })
+            .catch(() => toast.error("Failed to activate desktop access"))
     }
 
     function validate() {
@@ -76,6 +95,21 @@ function Settings() {
                         Save
                     </button>
                 </div>
+            </div>
+            <div className="detail-card">
+                <span className="detail-label">Desktop App</span>
+                {licenseKeyError && <button className="btn btn-primary" onClick={handleGenerateKey}>Activate Desktop Access</button>}
+                {licenseKey && (
+                    <div className="license-key-display">
+                        <span className="license-key">{licenseKey}</span>
+                        <button className="btn btn-secondary" onClick={() => {
+                            navigator.clipboard.writeText(licenseKey)
+                            toast.success("Copied to clipboard")
+                        }}>
+                            Copy
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     )

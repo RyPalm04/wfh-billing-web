@@ -29,6 +29,20 @@
     color: var(--muted);
 }
 
+.license-key-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.license-key {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.05rem;
+}
+
 @media (max-width: 600px) {
     .settings .detail-card {
         max-width: 100%;
