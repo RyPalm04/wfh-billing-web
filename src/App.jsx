@@ -12,11 +12,14 @@ import Nav from './components/Nav'
 import Settings from './pages/Settings'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import Checkout from './pages/Checkout'
+import SubscriptionInactive from './pages/SubscriptionInactive'
 import logger from './utils/logger'
 import FeedbackModal from './components/FeedbackModal'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppFooter from './components/AppFooter'
 import './App.css'
+import CheckoutSuccess from './pages/CheckoutSuccess'
 
 function AppContent() {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -75,6 +78,9 @@ function AppContent() {
               <Route path="/statements/:id/edit" element={<EditStatement />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout/success" element={<CheckoutSuccess />} />
+            <Route path="/subscription-inactive" element={<SubscriptionInactive />} />
           </Routes>
         </ErrorBoundary>
         <button className="feedback-fab" onClick={() => setFeedbackOpen(prev => !prev)}>Feedback</button>

@@ -1,6 +1,7 @@
 .login-wrapper {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: var(--bg);
@@ -92,3 +93,10 @@
 .login-footer a:hover {
     text-decoration: underline;
 }
+
+.auth-message {
+      margin-top: 24px;
+      color: var(--secondary);
+      font-size: 14px;
+      line-height: 1.6;
+  }

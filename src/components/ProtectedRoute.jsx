@@ -8,7 +8,15 @@ function ProtectedRoute() {
         return null
     }
 
-    return session ? <Outlet /> : <Navigate to="/login" replace />
+    if (!session) {
+        return <Navigate to="/login" replace />
+    }  
+
+    if (!session.user?.app_metadata?.tenant_id) {
+        return <Navigate to="/checkout" replace />
+    }
+
+    return <Outlet />
 }
 
 export default ProtectedRoute

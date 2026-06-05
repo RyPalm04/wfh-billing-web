@@ -44,8 +44,8 @@ describe('ProtectedRoute', () => {
         expect(screen.queryByText('Protected Content')).not.toBeInTheDocument()
     })
 
-    it('renders child route when session exists', () => {
-        useAuth.mockReturnValue({ session: { user: { id: '123' } }, loading: false })
+    it('renders child route when session exists with tenant_id', () => {
+        useAuth.mockReturnValue({ session: { user: { app_metadata: { tenant_id: '123' } } }, loading: false })
         render(
             <MemoryRouter initialEntries={['/']}>
                 <Routes>
@@ -57,4 +57,23 @@ describe('ProtectedRoute', () => {
         )
         expect(screen.getByText('Protected Content')).toBeInTheDocument()
     })
+
+    it('redirects to /checkout when session exists but no tenant_id', () => {
+      useAuth.mockReturnValue({ 
+          session: { user: { app_metadata: {} } },
+          loading: false
+      })
+      render(
+          <MemoryRouter initialEntries={['/']}>
+              <Routes>
+                  <Route element={<ProtectedRoute />}>
+                      <Route path="/" element={<div>Protected Content</div>} />
+                  </Route>
+                  <Route path="/checkout" element={<div>Checkout Page</div>} />
+              </Routes>
+          </MemoryRouter>
+      )
+      expect(screen.getByText('Checkout Page')).toBeInTheDocument()
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument()
+  })
 })
