@@ -1,5 +1,11 @@
 @import "StatementDetail.css";
 
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 .settings .detail-card {
     max-width: 640px;
     margin: 0 auto;
@@ -21,6 +27,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-top: 8px;
 }
 
 .input-suffix {
@@ -33,14 +40,36 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-top: 8px;
 }
 
 .license-key {
     font-family: monospace;
     font-size: 13px;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--green);
     letter-spacing: 0.05rem;
+}
+
+.license-key--hidden {
+    filter: blur(5px);
+    user-select: none;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.btn-icon:hover {
+    color: var(--primary);
+    background-color: var(--green-light);
 }
 
 @media (max-width: 600px) {
