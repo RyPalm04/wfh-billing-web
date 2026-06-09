@@ -5,6 +5,7 @@ import './Settings.css'
 import toast from 'react-hot-toast'
 import logger from '../utils/logger'
 import { generateLicenseKey, getLicenseKey } from '../api/desktopApi'
+import { FiClipboard, FiEye, FiEyeOff } from 'react-icons/fi'
 
 function Settings() {
     const { data: settings, loading, error } = useFetchData(() => getSettings().then(r => r.data))
@@ -13,6 +14,7 @@ function Settings() {
     const [errors, setErrors] = useState({})
     const [licenseKey, setLicenseKey] = useState(null)
     const [licenseKeyError, setLicenseKeyError] = useState(null)
+    const [revealed, setRevealed] = useState(false)
 
     useEffect(() => {
         if (settings) {
@@ -101,12 +103,15 @@ function Settings() {
                 {licenseKeyError && <button className="btn btn-primary" onClick={handleGenerateKey}>Activate Desktop Access</button>}
                 {licenseKey && (
                     <div className="license-key-display">
-                        <span className="license-key">{licenseKey}</span>
-                        <button className="btn btn-secondary" onClick={() => {
+                        <span className={`license-key ${revealed ? '' : 'license-key--hidden'}`}>{licenseKey}</span>
+                        <button className="btn btn-icon" onClick={() => setRevealed(prev => !prev)} title={revealed ? 'Hide' : 'Show'}>
+                            {revealed ? <FiEyeOff size={15} /> : <FiEye size={15} />}
+                        </button>
+                        <button className="btn btn-icon" title="Copy to clipboard" onClick={() => {
                             navigator.clipboard.writeText(licenseKey)
                             toast.success("Copied to clipboard")
                         }}>
-                            Copy
+                            <FiClipboard size={15} />
                         </button>
                     </div>
                 )}
