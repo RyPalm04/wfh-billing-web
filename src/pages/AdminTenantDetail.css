@@ -1,0 +1,14 @@
+@import "StatementDetail.css";
+
+.admin-tenant-detail {
+    display: flex;
+    justify-content: center;
+}
+
+.admin-tenant-detail h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: 28px;
+    color: var(--green);
+    margin-bottom: 24px;
+}

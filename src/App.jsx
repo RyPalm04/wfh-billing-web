@@ -20,6 +20,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 import AppFooter from './components/AppFooter'
 import './App.css'
 import CheckoutSuccess from './pages/CheckoutSuccess'
+import AdminProtectedRoute from './components/AdminProtectedRoute'
+import AdminTenantList from './pages/AdminTenantList'
+import AdminTenantDetail from './pages/AdminTenantDetail'
 
 function AppContent() {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -81,6 +84,10 @@ function AppContent() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/checkout/success" element={<CheckoutSuccess />} />
             <Route path="/subscription-inactive" element={<SubscriptionInactive />} />
+            <Route element={<AdminProtectedRoute />} >
+              <Route path="/admin/tenants" element={<AdminTenantList />} />
+              <Route path="/admin/tenants/:id" element={<AdminTenantDetail />} />
+            </Route>
           </Routes>
         </ErrorBoundary>
         <button className="feedback-fab" onClick={() => setFeedbackOpen(prev => !prev)}>Feedback</button>
