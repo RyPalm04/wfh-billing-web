@@ -10,6 +10,7 @@ import { useFetchData } from '../hooks/useFetchData'
 import { formatDate } from '../utils/date'
 import { getSettings } from '../api/settingsApi'
 import { getCatalog } from '../api/catalogApi'
+import { DetailRow } from '../components/DetailRow'
 
 function StatementDetail() {
     const { id } = useParams()
@@ -29,15 +30,6 @@ function StatementDetail() {
     const [downPayment, setDownPayment] = useState('')
     const [savedPayment, setSavedPayment] = useState('')
     const navigate = useNavigate()
-
-    function DetailRow({ label, value, className }) {
-        return (
-            <div className={`detail-row${className ? ` ${className}` : ''}`}>
-                <span className="detail-label">{label}</span>
-                <span className="detail-value">{value}</span>
-            </div>
-        )
-    }
 
     function handleKeyDown(event) {
         if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable) {

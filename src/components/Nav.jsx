@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { MdSettings } from 'react-icons/md'
 import logo from '/favicon.svg'
@@ -8,6 +8,8 @@ import { supabase } from '../supabaseClient'
 function Nav() {
     const [menuOpen, setMenuOpen] = useState(false)
     const [session, setSession] = useState(null)
+    const location = useLocation()
+    const isAdminRoute = location.pathname.startsWith('/admin')
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
@@ -18,6 +20,8 @@ function Nav() {
 
         return () => subscription.unsubscribe
     }, [])
+
+    const isAdmin = session?.user?.app_metadata?.app_role === 'platform_manager'
 
     async function logout() {
         console.log("User signed out")
@@ -43,12 +47,19 @@ function Nav() {
                 <span></span>
             </button>
             <div className={`nav-actions ${menuOpen ? 'nav-actions--open' : ''}`}>
-                <Link to="/statements/new" className="nav-link" onClick={() => setMenuOpen(false)}>New Statement</Link>
-                <Link to="/statements" className="nav-link" onClick={() => setMenuOpen(false)}>View Statements</Link>
-                <Link to="/settings" className="nav-link nav-link--icon" onClick={() => setMenuOpen(false)}>
-                    <MdSettings size={18} />
-                    Settings
-                </Link>
+                {isAdminRoute ? (
+                    <Link to="/" className="nav-link">Back to Testing</Link>
+                ) : (
+                    <>
+                        <Link to="/statements/new" className="nav-link" onClick={() => setMenuOpen(false)}>New Statement</Link>
+                        <Link to="/statements" className="nav-link" onClick={() => setMenuOpen(false)}>View Statements</Link>
+                        <Link to="/settings" className="nav-link nav-link--icon" onClick={() => setMenuOpen(false)}>
+                            <MdSettings size={18} />
+                            Settings
+                        </Link>
+                        {isAdmin && <Link to="/admin/tenants" className="nav-link">Admin</Link>}
+                    </>
+                )}
                 {session
                     ? <Link to="/login" className="nav-link" onClick={() => logout()}>Logout</Link>
                     : <Link to="/login" className="nav-link">Login</Link>
