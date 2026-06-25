@@ -15,7 +15,7 @@ vi.mock('../api/desktopApi', () => ({
     generateLicenseKey: vi.fn()
 }))
 
-const mockSettings = { id: 1, salesTaxRate: 0.0825 }
+const mockSettings = { tenantId: 'some-test-uuid', salesTaxRate: 0.0825 }
 
 describe('Settings', () => {
     beforeEach(() => {
@@ -51,13 +51,13 @@ describe('Settings', () => {
     })
 
     it('calls updateSettings with new rate on save', async () => {
-        settingsApi.updateSettings.mockResolvedValue({ data: { id: 1, salesTaxRate: 0.09 } })
+        settingsApi.updateSettings.mockResolvedValue({ data: { tenantId: 'some-test-uuid', salesTaxRate: 0.09 } })
         render(<MemoryRouter><Settings /></MemoryRouter>)
         await waitFor(() => expect(screen.getByLabelText(/Sales Tax Rate/i)).toBeInTheDocument())
         fireEvent.change(screen.getByLabelText(/Sales Tax Rate/i), { target: { value: '0.09' } })
         fireEvent.click(screen.getByRole('button', { name: /save/i }))
         await waitFor(() => {
-            expect(settingsApi.updateSettings).toHaveBeenCalledWith({ id: 1, salesTaxRate: 0.09 })
+            expect(settingsApi.updateSettings).toHaveBeenCalledWith({ tenantId: 'some-test-uuid', salesTaxRate: 0.09 })
         })
     })
 
